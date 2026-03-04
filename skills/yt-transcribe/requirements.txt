@@ -1,0 +1,4 @@
+yt-dlp
+mlx-whisper
+python-pptx
+openai-whisper
