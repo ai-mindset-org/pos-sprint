@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NewsDesk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <div id="clock" class="clock"></div>
+      <div id="date" class="date"></div>
+    </header>
+
+    <main class="grid">
+      <!-- Quick Links -->
+      <section class="card" id="links-section">
+        <div class="section-label">Quick Links</div>
+        <div id="links-list" class="links-list"></div>
+        <button id="add-link-btn" class="add-btn">+ Add link</button>
+        <form id="link-form" class="link-form hidden">
+          <input id="link-title" type="text" placeholder="Name" autocomplete="off">
+          <input id="link-url" type="text" placeholder="URL" autocomplete="off">
+          <div id="color-picker" class="color-picker"></div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Add</button>
+            <button type="button" id="cancel-link-btn" class="btn-ghost">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Focus of the Week -->
+      <section class="card" id="focus-section">
+        <div class="section-label">Focus of the Week</div>
+        <div id="focus-week" class="focus-text" data-key="focus-week">Click to set focus...</div>
+      </section>
+
+      <!-- Tasks of the Day -->
+      <section class="card" id="tasks-section">
+        <div class="section-label">Tasks Today</div>
+        <div id="tasks-list" class="tasks-list"></div>
+        <div class="task-input-row">
+          <input id="task-input" type="text" placeholder="Add a task..." autocomplete="off">
+          <button id="add-task-btn" class="add-btn-inline">+</button>
+        </div>
+      </section>
+
+      <!-- Notes -->
+      <section class="card" id="notes-section">
+        <div class="section-label">Notes</div>
+        <div id="notes" class="notes-text" data-key="notes">Click to add notes...</div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

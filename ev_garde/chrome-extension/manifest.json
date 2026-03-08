@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "NewsDesk",
+  "version": "1.0",
+  "description": "Your newsletter command center",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  }
+}
