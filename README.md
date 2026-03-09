@@ -83,6 +83,8 @@ Batch: sprint-X26
 
 ## Chrome Extensions
 
+Расширения для браузера Chrome, созданные участниками спринта.
+
 | Расширение | Автор | Описание |
 |------------|-------|----------|
 | [ev_garde](Chrome%20Extensions/ev_garde) | [@ev_garde](https://github.com/ev_garde) | Chrome-расширение new tab + скилл ai-bear-newsletter |
