@@ -1,134 +1,170 @@
 ---
 name: pos-audit
-description: Scan your POS infrastructure — CLAUDE.md, skills, MCP servers, memory, hooks, settings. Score 0-12 with gap analysis and next steps.
-version: 2.0
+description: Scan your POS infrastructure — CLAUDE.md, skills, MCP servers, memory, hooks, settings. Score 0-12 with gap analysis.
+version: 3.0
 user_invocable: true
 ---
 
 # POS Audit — Infrastructure Scanner
 
-Scan your entire Claude Code setup, cross-reference components, and report a scored assessment with actionable gaps.
+Scan your entire Claude Code setup, cross-reference components, and produce a scored assessment with actionable gaps. Based on 6 diagnostic layers matching the POS setup pipeline.
 
 ## Step 0: Discover MCP Servers
 
-Read MCP configuration to build a capability map BEFORE scanning anything else.
+Read MCP configuration BEFORE scanning anything else — the server list drives capability detection.
 
 ```bash
 cat ~/.claude/mcp.json 2>/dev/null
 cat .claude/mcp.json 2>/dev/null
 ```
 
-Parse the JSON and extract server names. Build a map:
+Parse JSON and categorize each server:
 
 | Category | Server Examples | POS Function |
 |----------|----------------|--------------|
-| Calendar | krisp, google-calendar | Time awareness |
-| Tasks | linear, jira | Work tracking |
-| Messaging | telegram, slack | Communication |
-| Search | exa, context7 | Research & docs |
-| Files | filesystem | Extended file access |
-| Notes | notion, obsidian | Knowledge base |
-| Browser | playwright | Web interaction |
-| Other | custom servers | Domain-specific |
+| Tasks | linear, jira | Sprint awareness, status tracking |
+| Calendar | krisp, google-calendar | Time awareness, meeting prep |
+| Search | exa, context7 | Research, documentation, fact-checking |
+| Messaging | telegram, slack | Brief delivery, team communication |
+| Files | filesystem | Cross-project file access |
+| Browser | playwright, browsermcp | Screenshots, web interaction |
+| Notes | notion, obsidian | Knowledge base queries |
+| Deploy | netlify, vercel | CI/CD management |
 
-**Capability score**: count how many CATEGORIES are covered, not just server count.
+**Capability score**: count CATEGORIES covered, not server count. 5 filesystem mounts = 1 category.
 
-## Step 1: CLAUDE.md Analysis (Constitution)
+Also check for deferred/marketplace servers by scanning skill files for ToolSearch patterns:
 
 ```bash
-# Global rules
+grep -r "ToolSearch\|mcp__" ~/.claude/skills/*/SKILL.md 2>/dev/null | grep -o 'mcp__[a-z_]*' | sort -u
+```
+
+This reveals servers used in skills but not in mcp.json (deferred servers loaded on-demand).
+
+## Step 1: CLAUDE.md Analysis (Context Layer)
+
+```bash
 cat ~/.claude/CLAUDE.md 2>/dev/null | wc -l
-
-# Project-level rules
 find . -name "CLAUDE.md" -maxdepth 2 2>/dev/null
-
-# AGENTS.md
 find . -name "AGENTS.md" -maxdepth 2 2>/dev/null
 ```
 
-**Deep analysis** — don't just count lines. Parse and report:
+**Parse and report sections** — don't just count lines:
 
-| Section | What to look for |
-|---------|-----------------|
-| Rules | Naming conventions, formatting standards |
-| Tools | MCP references, skill mentions |
-| Integrations | API keys, service references |
-| Workflows | Pipelines, automation patterns |
-| Context mgmt | Handoff protocol, memory rules |
+| Section | What to look for | Quality signal |
+|---------|-----------------|----------------|
+| Formatting | Bold rules, markdown standards | Has specific rules, not "be clear" |
+| Naming | `{project} {type} description – date` convention | EN dash, date at end, project codes |
+| Integrations | MCP references, service names | References match installed servers |
+| Workflows | Pipelines, morning routine, review cadence | Operational, not aspirational |
+| Context mgmt | Handoff protocol, footer format | Threshold-based, symbols defined |
+| Eval protocol | T/R/C binary assessment | Rubric exists, footer format defined |
+| Linear awareness | Task detection, footer display | Action suggestions, URL patterns |
 
-**Cross-reference**: check if tools/skills mentioned in CLAUDE.md actually exist as installed files.
+**Cross-reference**: check if tools/skills mentioned in CLAUDE.md actually exist.
+
+```bash
+# Extract skill names mentioned in CLAUDE.md
+grep -o '/[a-z-]*' ~/.claude/CLAUDE.md 2>/dev/null | sort -u
+```
+
+Compare against installed skills — flag ghosts (mentioned but missing) and orphans (installed but never referenced).
 
 ## Step 2: Skills Inventory
 
 ```bash
-# Global skills (folder-based)
+# Global skills
 ls ~/.claude/skills/*/SKILL.md 2>/dev/null
-
-# Global skills (flat files)
 ls ~/.claude/skills/*.md 2>/dev/null
 
 # Project skills
 ls .claude/skills/*/SKILL.md 2>/dev/null
-ls .claude/skills/*.md 2>/dev/null
 ```
 
-For each skill found:
-- Read first 5 lines to get `name:` and `description:` from YAML frontmatter
-- Categorize: `utility` | `content` | `workflow` | `integration` | `infrastructure`
-- Flag skills referenced in CLAUDE.md but not installed (ghosts)
-- Flag skills installed but not referenced anywhere (orphans)
+For each skill:
+- Read first 5 lines for `name:` and `description:` from YAML frontmatter
+- Categorize: `infrastructure` | `workflow` | `integration` | `content` | `creative` | `utility`
+- Flag skills without proper YAML frontmatter (not production-ready)
+
+### Skill Pattern Detection
+
+Count skills by pattern:
+
+| Pattern | Signal | Examples |
+|---------|--------|---------|
+| A: Audit | scans, scores, reports | pos-audit, vault-cleanup |
+| B: Pipeline | gathers from sources, synthesizes | pos-morning, research, daily-focus |
+| C: Generator | produces files/artifacts | pos-dashboard-gen, deck, imagine |
+| D: Integrator | wraps MCP with opinionated defaults | linear-action, telegram, calendar |
+
+A healthy POS has skills in at least 3 of 4 patterns.
 
 ## Step 3: MCP Capability Matrix
 
-Using the server list from Step 0, build a matrix:
-
-```
-  MCP CAPABILITY MATRIX
-  ├─ krisp              calendar, meetings    ✓ loaded
-  ├─ linear             tasks, projects       ✓ loaded
-  ├─ telegram           messaging             ✓ loaded
-  ├─ exa                web search            ✓ loaded
-  ├─ filesystem         file access           ✓ loaded
-  └─ context7           library docs          ✓ loaded
-```
-
-Test each server by checking if ToolSearch can find its tools:
+Using servers from Step 0, test each:
 
 ```
 ToolSearch: "+{server_name}"
 ```
 
-Report: `✓ loaded` | `✗ config only` (configured but not responding)
+Report status:
 
-## Step 4: Memory Files
+```
+  MCP CAPABILITY MATRIX
+  ├─ linear             tasks          ✓ loaded
+  ├─ krisp              meetings       ✓ loaded
+  ├─ telegram           messaging      ✓ loaded
+  ├─ exa                search         ✓ loaded (deferred)
+  ├─ filesystem         files          ✓ loaded
+  ├─ playwright         browser        ✓ loaded (deferred)
+  └─ context7           docs           ✓ loaded (deferred)
+```
+
+Statuses: `✓ loaded` | `✗ config only` (in mcp.json but not responding) | `◌ deferred` (used in skills, not in mcp.json)
+
+## Step 4: Memory & Persistence
 
 ```bash
-# Auto memory — all project memories
+# Auto memory files
 find ~/.claude/projects -name "MEMORY.md" 2>/dev/null
 
-# Count all memory files across projects
+# Memory file count and size
 find ~/.claude/projects -path "*/memory/*" -type f 2>/dev/null | wc -l
-
-# Total size
 du -sh ~/.claude/projects/*/memory/ 2>/dev/null
 
 # Episodic memory plugin
 find ~/.claude -path "*episodic*" -type d 2>/dev/null
 ```
 
-Report: project count with memory, total file count, total size, most recently updated.
+Report: project count with memory, total files, total size, most recently updated.
 
-## Step 5: Hooks
+**Quality check**: read MEMORY.md content — is it useful or just boilerplate? Look for:
+- Named conventions or patterns
+- Project-specific decisions
+- Cross-session state (e.g., Linear task caches)
+
+## Step 5: Hooks & Automation
 
 ```bash
 cat ~/.claude/hooks.json 2>/dev/null
-cat .claude/hooks.json 2>/dev/null
+cat ~/.claude/settings.json 2>/dev/null | grep -A5 '"hooks"'
+ls ~/.claude/hooks/ 2>/dev/null
 ```
 
 For each hook, report:
-- Trigger type: `PreToolUse` | `PostToolUse` | `Notification` | `Stop` | `SubagentStop`
-- Matcher pattern (tool name or `*`)
-- What it does (from command)
+- **Trigger**: `SessionStart` | `SessionEnd` | `PostToolUse:Write` | `PreToolUse` | etc.
+- **Script**: what it does (read the script file)
+- **Impact**: what POS capability it enables
+
+### Known Hook Patterns
+
+| Hook | Trigger | POS Capability |
+|------|---------|---------------|
+| Linear sync | SessionStart | Linear Awareness Layer in footer |
+| Ambient advisor | SessionStart | Background research auto-trigger |
+| Open in Obsidian | PostToolUse:Write | Auto-open .md in Obsidian |
+| Session logging | SessionEnd | Linear task reference tracking |
+| Daily sessions | SessionEnd | Session history capture |
 
 ## Step 6: Settings & Permissions
 
@@ -137,60 +173,75 @@ cat ~/.claude/settings.json 2>/dev/null
 ```
 
 Report:
-- Permission mode: `default` | `plan` | `bypassPermissions`
-- Allowed tools list
-- Custom model preferences
-- Any allow/deny patterns
+- **Permission mode**: `default` | `dontAsk` | `plan` | `bypassPermissions`
+- **Allowed tools**: explicit allow patterns
+- **Plugins**: installed plugin list with versions
+- **StatusLine**: custom or default
+- **Additional directories**: extra paths in context
 
 ## Output Format
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  POS AUDIT · {date}                                 │
-│  dir: {cwd}                                         │
-│  mcp: {server_count} servers · {category_count} categories  │
+│  POS AUDIT · {date}                                  │
+│  dir: {cwd}                                          │
+│  mcp: {count} servers · {categories} categories      │
 └─────────────────────────────────────────────────────┘
 
-  CONSTITUTION                                    {✓|✗}
-  ├─ CLAUDE.md (global)     {lines}L  {sections found}
-  ├─ CLAUDE.md (project)    {lines}L  {sections found}
+  CONTEXT                                         {✓|✗}
+  ├─ CLAUDE.md (global)     {lines}L  {sections}
+  ├─ CLAUDE.md (project)    {lines}L  {sections}
   ├─ AGENTS.md              {status}
-  └─ cross-ref              {matched}/{total} skills mentioned
+  └─ cross-ref              {matched}/{total} skills
 
   SKILLS                                          {count}
-  ├─ global: {list with categories}
-  ├─ project: {list with categories}
-  ├─ ghosts: {skills in CLAUDE.md but not installed}
-  └─ orphans: {skills installed but not referenced}
+  ├─ infrastructure  {list}
+  ├─ workflow         {list}
+  ├─ integration      {list}
+  ├─ content          {list}
+  ├─ ghosts           {mentioned but not installed}
+  └─ orphans          {installed but not referenced}
 
   MCP SERVERS                                     {count}
   ├─ {name}  {category}  {status}
-  └─ coverage: {categories covered}/{8 possible}
+  └─ coverage: {categories}/{8}
 
-  MEMORY                                          {projects}
-  ├─ auto memory     {file_count} files across {project_count} projects
-  ├─ total size      {size}
-  └─ episodic        {status}
+  MEMORY                                          {files}
+  ├─ projects    {count} with memory
+  ├─ total       {size}
+  └─ episodic    {installed|not found}
 
   HOOKS                                           {count}
   └─ {trigger}: {description}
 
   SETTINGS
-  ├─ permissions     {mode}
-  └─ model           {model or default}
+  ├─ permissions   {mode}
+  ├─ plugins       {count} ({names})
+  └─ statusline    {custom|default}
 
   ─────────────────────────────────────────────────
 
   POS SCORE: {score}/12
 
-  ┌─ Scoring Breakdown ──────────────────────────┐
-  │ {component}              {pts}/{max}  {note}  │
-  └───────────────────────────────────────────────┘
+  ┌─ Breakdown ─────────────────────────────────┐
+  │ CLAUDE.md exists        {0-1}/{1}   {note}  │
+  │ CLAUDE.md quality       {0-1}/{1}   {note}  │
+  │ Skills > 0              {0-1}/{1}   {note}  │
+  │ Skills > 5              {0-1}/{1}   {note}  │
+  │ MCP > 0                 {0-1}/{1}   {note}  │
+  │ MCP diversity           {0-1}/{1}   {note}  │
+  │ Memory active           {0-1}/{1}   {note}  │
+  │ Hooks configured        {0-1}/{1}   {note}  │
+  │ AGENTS.md               {0-1}/{1}   {note}  │
+  │ Project CLAUDE.md       {0-1}/{1}   {note}  │
+  │ Cross-referencing       {0-1}/{1}   {note}  │
+  │ Settings configured     {0-1}/{1}   {note}  │
+  └─────────────────────────────────────────────┘
 
   GAPS (highest impact first):
-  1. {gap + specific action to fix}
-  2. {gap + specific action to fix}
-  3. {gap + specific action to fix}
+  1. {gap + specific action}
+  2. {gap + specific action}
+  3. {gap + specific action}
 ```
 
 ## Scoring (12 points)
@@ -198,38 +249,36 @@ Report:
 | Component | Points | Criteria |
 |-----------|--------|----------|
 | CLAUDE.md exists | 1 | Any CLAUDE.md (global or project) |
-| CLAUDE.md > 50 lines | 1 | Meaningful rules, not boilerplate |
+| CLAUDE.md quality | 1 | >50 lines with named sections (naming, integrations, workflows) |
 | Skills > 0 | 1 | Has any installed skills |
-| Skills > 5 | 1 | Meaningful skill library |
+| Skills > 5 | 1 | Meaningful skill library with 3+ patterns |
 | MCP > 0 | 1 | Has any MCP servers configured |
-| MCP diversity | 1 | 3+ categories covered (calendar, tasks, search, etc.) |
-| Memory active | 1 | Auto memory exists with content |
+| MCP diversity | 1 | 3+ categories covered |
+| Memory active | 1 | Auto memory exists with content (not empty) |
 | Hooks configured | 1 | Any hooks set up |
 | AGENTS.md | 1 | Project has agent index |
 | Project CLAUDE.md | 1 | Project-specific rules (not just global) |
-| Cross-referencing | 1 | Skills mentioned in CLAUDE.md actually exist (>80% match) |
-| Settings configured | 1 | Non-default permission mode or custom settings |
+| Cross-referencing | 1 | >80% of skills mentioned in CLAUDE.md exist |
+| Settings configured | 1 | Non-default permissions or custom statusline |
 
 ## Gap Suggestions
 
-Based on score range AND specific missing components:
+| Score | Focus |
+|-------|-------|
+| 0-3 | "Start: `~/.claude/CLAUDE.md` + 1 skill + 1 MCP server → run /pos-setup" |
+| 4-6 | "Grow: more skills, MCP diversity, enable auto memory" |
+| 7-9 | "Automate: hooks, Linear awareness, morning brief pipeline" |
+| 10-12 | "Share: dashboard, skill packs, community contributions" |
 
-| Score | Suggestion |
-|-------|-----------|
-| 0-3 | "Minimum viable POS: create `~/.claude/CLAUDE.md` + install 1 skill + add 1 MCP server" |
-| 4-6 | "Growing POS: add more skills, connect data sources via MCP, enable auto memory" |
-| 7-9 | "Advanced POS: add hooks for automation, set up cross-referencing, configure permissions" |
-| 10-12 | "Full POS: consider building a dashboard, sharing your setup, or creating skill packs" |
-
-Always suggest the **single highest-impact next action** as item #1.
+Always suggest the **single highest-impact action** as gap #1.
 
 ## Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
-| Counting MCP servers instead of categories | 5 filesystem servers = 1 category, not 5 points |
+| Counting servers instead of categories | 5 filesystem mounts = 1 category |
 | Skipping cross-reference check | Ghost skills waste CLAUDE.md context tokens |
-| Not reading SKILL.md frontmatter | Name/description tells you if a skill is real or placeholder |
-| Reporting memory dirs without checking content | Empty memory/ dirs score 0 |
-| Running `find` with excessive depth | `-maxdepth 2` or `-maxdepth 3` is enough |
-| Hardcoded paths in report | Always use `~` or `$HOME` in suggestions |
+| Not reading SKILL.md frontmatter | Name/description tells if skill is real or placeholder |
+| Reporting empty memory dirs as active | Check content, not just file existence |
+| Missing deferred servers | Scan skill files for `mcp__` patterns, not just mcp.json |
+| Hardcoded paths in report | Use `~` or `$HOME` in all suggestions |

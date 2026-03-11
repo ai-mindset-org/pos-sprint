@@ -1,7 +1,7 @@
 ---
 name: pos-skill-factory
-description: Create a new Claude Code skill from a description. Generates SKILL.md from 4 template patterns, validates quality, installs to chosen location.
-version: 2.0
+description: Create a new Claude Code skill from a description. 4 template patterns, quality validation, install to chosen location.
+version: 3.0
 user_invocable: true
 arguments:
   - name: idea
@@ -11,95 +11,126 @@ arguments:
 
 # POS Skill Factory — Build Skills from Ideas
 
-Create a production-quality Claude Code skill from a natural language description. Uses template patterns, validates against a quality checklist, and installs to the right location.
+Create a production-quality Claude Code skill from a natural language description. Uses 4 template patterns from real POS implementations, validates against a quality checklist, and installs to the right location.
 
 ## Step 1: Understand the Idea
 
-Parse the user's `{idea}` and determine:
+Parse `{idea}` and determine:
 
-1. **What it does** — core action (scan, generate, send, transform, aggregate, analyze)
-2. **What it needs** — inputs (files, MCP data, user input, context, CLI args)
-3. **What it outputs** — result format (terminal text, file, message, HTML, structured data)
-4. **What tools it uses** — Read/Write, Bash, Grep, Glob, MCP servers, ToolSearch, Task (sub-agents)
-5. **Which template pattern fits** — see Step 2
+1. **Core action** — scan, generate, send, transform, aggregate, analyze, summarize
+2. **Inputs** — files, MCP data, user input, context, CLI args
+3. **Outputs** — terminal text, file, message, HTML, structured data
+4. **Tools needed** — Read/Write, Bash, Grep, Glob, MCP, ToolSearch, Task (sub-agents)
+5. **Pattern** — which of the 4 templates fits best
 
 ## Step 2: Select Template Pattern
 
-Every good skill fits one of 4 patterns. Pick the closest match:
-
 ### Pattern A: Audit (scan + score + suggest)
 
-**When**: the skill examines a system, counts things, produces a score.
-**Structure**: scan sources → aggregate → score → suggest gaps.
-**Examples**: pos-audit, security-check, dependency-review.
+**When**: skill examines a system, counts things, produces a score.
+**Structure**: discover sources → scan each → aggregate → score → suggest gaps.
+**Real examples**: `/pos-audit` (POS infrastructure), `vault-cleanup` (Obsidian maintenance), `security-scan` (secrets/permissions).
 
 ```
 ## Step 0: Discover sources
+  {read mcp.json, find files, check configs}
 ## Step 1-N: Scan each source
-## Output: scored report with gaps
+  {extract data, categorize, count}
+## Output: scored report
+  {box-drawing table with score breakdown}
 ## Scoring table
+  {component | points | criteria}
+## Gap suggestions
+  {score range → recommended action}
 ```
 
 ### Pattern B: Pipeline (gather + synthesize + output)
 
-**When**: the skill pulls from multiple sources and produces a synthesized result.
-**Structure**: detect integrations → gather from each → synthesize → output in format.
-**Examples**: pos-morning, weekly-review, daily-recap.
+**When**: skill pulls from multiple sources and synthesizes a result.
+**Structure**: detect integrations → gather from each (with degradation) → synthesize → output in chosen format.
+**Real examples**: `/pos-morning` (daily brief), `/daily-focus` (5 parallel agents → brief + visual card), `/research` (multi-angle Exa search → synthesis).
 
 ```
-## Step 0: Detect integrations (read mcp.json)
-## Step 1: Gather from each source (with degradation chain)
-## Step 2: Synthesize (derive insight)
-## Step 3: Output (multiple format options)
+## Step 0: Detect integrations
+  {read mcp.json, build source map}
+## Step 1: Gather from each source
+  {degradation chain: MCP → bash fallback → skip}
+## Step 2: Synthesize
+  {derive insight from combined data}
+## Step 3: Output
+  {multiple format options: terminal, file, message}
+```
+
+**Key Pipeline pattern**: always start with MCP detection and use **graceful degradation chains**:
+```
+Calendar: Krisp MCP → gcal script → skip
+Tasks: Linear MCP → cache file → local TODO → skip
+Messages: Telegram MCP → skip
 ```
 
 ### Pattern C: Generator (input + transform + write)
 
-**When**: the skill takes input and produces a file or artifact.
+**When**: skill takes input and produces a file or artifact.
 **Structure**: parse input → apply template/rules → write output → verify.
-**Examples**: pos-dashboard-gen, deck, report-gen.
+**Real examples**: `/pos-dashboard-gen` (HTML dashboard), `/deck` (HTML presentations), `/imagine` (image generation via API).
 
 ```
-## Step 1: Parse input (args or interactive)
-## Step 2: Build artifact (HTML, markdown, etc.)
+## Step 1: Parse input
+  {args or interactive questions}
+## Step 2: Build artifact
+  {HTML, markdown, image, etc.}
 ## Step 3: Write and verify
-## Design system (if visual output)
+  {write file, check size, open in browser/app}
+## Design system (if visual)
+  {CSS variables, fonts, color scheme}
 ```
 
 ### Pattern D: Integrator (detect + connect + execute)
 
-**When**: the skill wraps an external service with opinionated defaults.
-**Structure**: ToolSearch to load MCP → build payload → execute → confirm.
-**Examples**: linear-action, telegram-send, calendar-add.
+**When**: skill wraps an external service with opinionated defaults.
+**Structure**: ToolSearch → build payload → show preview → confirm → execute → report.
+**Real examples**: `/linear-action` (Linear CRUD with pre-fill), `/telegram` (MTProto messaging), `/calendar` (gcal with fallback chain).
 
 ```
-## Step 0: Load MCP tools via ToolSearch
-## Step 1: Build payload (pre-fill from context)
-## Step 2: Show preview → confirm
+## Step 0: Load MCP tools
+  {ToolSearch: "+server_name"}
+## Step 1: Build payload
+  {pre-fill from context — session topic, recent work}
+## Step 2: Preview → confirm
+  {show what will happen, ask y/edit/skip}
 ## Step 3: Execute and report
+  {MCP call, format result}
+```
+
+**Key Integrator pattern**: always **pre-fill then confirm**:
+```
+AIM-2054 · Sprint review prep · ◐ IP
+action: update
+comment: "completed slide deck, ready for review"
+→ execute? [y/edit/skip]
 ```
 
 ## Step 3: Generate Skill Name
 
-Rules (strict):
+Rules:
 - **Lowercase, hyphenated**: `morning-brief`, `weekly-review`, `task-sorter`
-- **2-3 words maximum**: never more than 3
+- **2-3 words max**: never more than 3
 - **Verb-noun preferred**: `check-tasks`, `send-digest`, `scan-vault`
 - **No generic verbs**: avoid `do-`, `run-`, `make-` — be specific
-- **No project prefix**: user adds their own prefix if needed (e.g., `aim-`)
+- **No project prefix**: user adds their own prefix (e.g., `aim-`)
 
-**Validation**: the name must complete the sentence "I want to _____" naturally.
-- Good: "I want to `check-tasks`" / "I want to `send-digest`"
-- Bad: "I want to `task-thing`" / "I want to `do-stuff`"
+**Validation**: name must complete "I want to _____" naturally.
+- Good: "I want to `check-tasks`"
+- Bad: "I want to `task-thing`"
 
 ## Step 4: Generate SKILL.md
 
-Follow the Claude Code skill spec exactly:
+Follow Claude Code skill spec exactly:
 
 ```markdown
 ---
 name: {skill-name}
-description: {ONE line — what it does + when to use. Must fit in a skill listing.}
+description: {ONE line — what it does. Must fit in a skill listing.}
 version: 1.0
 user_invocable: true
 arguments:          # only if skill takes parameters
@@ -108,19 +139,19 @@ arguments:          # only if skill takes parameters
     required: false
 ---
 
-# {Skill Title} — {Subtitle}
+# {Title} — {Subtitle}
 
-{2-3 sentences: what this skill does, why it exists, when to use it.}
+{2-3 sentences: what, why, when.}
 
-## Step 0: {Detect/Discover} (if skill uses MCP)
+## Step 0: {Detect/Discover} (if MCP-dependent)
 
-{Read ~/.claude/mcp.json, ToolSearch for required servers}
+{Read ~/.claude/mcp.json, ToolSearch for servers}
 
 ## Step N: {Action}
 
-{Specific instructions for Claude Code. Include:
+{Specific instructions with:
 - Exact tool calls (Read, Write, Bash, Grep, Glob, ToolSearch)
-- Exact MCP function names where relevant
+- MCP function names
 - Degradation chains (try A → try B → skip)
 - What to do with the data}
 
@@ -128,123 +159,110 @@ arguments:          # only if skill takes parameters
 
 {EXACT format with box-drawing characters:
 ┌─ ├─ └─ for trees
-─── for dividers
-Monospace blocks for structured output}
+─── for dividers}
 
 ## Principles
 
 - {Key behavior rule}
-- {Graceful degradation approach}
+- {Graceful degradation}
 - {What to never do}
 
 ## Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
-| {thing people get wrong} | {correct approach} |
+| {wrong approach} | {correct approach} |
 ```
 
 ### Spec Rules
 
-- **YAML frontmatter**: `name`, `description` (single line), `version`, `user_invocable: true`
-- **description**: ONE line that fits a skill listing — not a paragraph
-- **arguments**: only add if the skill genuinely needs parameters
-- **Box-drawing characters**: `┌ ├ └ ─ │` for all structured output
-- **$HOME or ~**: never hardcode personal paths
-- **Common Mistakes table**: ALWAYS include at the end (3-6 rows)
+- **YAML frontmatter**: `name`, `description` (one line), `version`, `user_invocable: true`
+- **description**: one line that fits a skill listing — not a paragraph
+- **arguments**: only if behavior genuinely changes with parameters
+- **Box-drawing**: `┌ ├ └ ─ │` for all structured output
+- **Paths**: `~` or `$HOME`, never hardcoded personal paths
+- **Common Mistakes**: ALWAYS include, 3-6 rows minimum
+- **MCP pattern**: Step 0 reads mcp.json → ToolSearch → degradation chain
 
-## Step 5: Show Preview and Ask Location
+## Step 5: Preview and Location
 
-**Pre-fill the skill content, then ask:**
+Show the skill, then ask via `AskUserQuestion`:
 
 ```
 Generated: /{skill-name}
-Pattern: {A|B|C|D} — {pattern name}
+Pattern: {A|B|C|D} — {name}
 Lines: {count}
-
-Preview:
-  name: {skill-name}
-  description: {description}
-  arguments: {list or "none"}
-  sections: {list of ## headers}
+Sections: {list of ## headers}
 
 Where to install?
 
-1. Global (~/.claude/skills/{skill-name}/SKILL.md)
-   > available in all projects
-
-2. Project (.claude/skills/{skill-name}/SKILL.md)
-   > only in current working directory
-
-3. Just show me the file (don't install)
+1. Global (~/.claude/skills/) — available everywhere (Recommended)
+2. Project (.claude/skills/) — only current directory
+3. Show only — don't install yet
 ```
-
-Use `AskUserQuestion` with these 3 options.
 
 ## Step 6: Install and Verify
 
 ```bash
-# Create directory
-mkdir -p {chosen_path}/{skill-name}
-
-# Write SKILL.md (use the Write tool, not bash)
+mkdir -p {path}/{skill-name}
 ```
 
-After writing, verify:
+Write SKILL.md with the Write tool (not bash).
+
+Verify:
 
 ```bash
-# Check file exists and has content
-wc -l {chosen_path}/{skill-name}/SKILL.md
+wc -l {path}/{skill-name}/SKILL.md
 ```
 
 ## Step 7: Post-Install
-
-Show:
 
 ```
 /{skill-name} installed
 
   path: {full_path}/SKILL.md
   size: {lines} lines
-  pattern: {pattern_name}
+  pattern: {A|B|C|D} — {name}
 
-  test it:  /{skill-name}
-  edit:     {full_path}/SKILL.md
+  test:  /{skill-name}
+  edit:  {full_path}/SKILL.md
 ```
 
-## Quality Validation Checklist
+## Quality Checklist
 
-Before writing the file, validate against all 7 checks:
+Validate all 7 before writing:
 
 | # | Check | Criteria |
 |---|-------|----------|
-| 1 | **Self-contained** | Works without external deps it can't detect |
-| 2 | **Graceful degradation** | Missing data source = skip, not error |
-| 3 | **Specific output format** | Exact format shown, not "generate a nice report" |
-| 4 | **Monospace-first** | Box-drawing characters for all structure |
-| 5 | **Tool-aware** | Specifies which Claude Code tools to use |
-| 6 | **Concise** | 40-120 lines. Longer = split into multiple skills |
-| 7 | **Anonymized paths** | Uses `~` or `$HOME`, never hardcoded user paths |
+| 1 | **Self-contained** | Works without deps it can't detect |
+| 2 | **Graceful degradation** | Missing source = skip, not error |
+| 3 | **Specific output** | Exact format shown, not "generate report" |
+| 4 | **Monospace-first** | Box-drawing chars for all structure |
+| 5 | **Tool-aware** | Names which Claude Code tools to use |
+| 6 | **Right size** | 40-150 lines. Longer → split into skills |
+| 7 | **Anonymized** | `~` or `$HOME`, no personal paths |
 
-If any check fails, fix the skill BEFORE showing the preview.
+Fix before preview if any check fails.
 
-## Examples
+## Real Examples
 
 | User says | Skill | Pattern | Key feature |
 |-----------|-------|---------|-------------|
-| "send me a summary of today to telegram" | `daily-recap` | B Pipeline | Session scan → synthesize → telegram send |
-| "check my overdue tasks and nag me" | `task-nag` | D Integrator | Linear MCP → filter overdue → format urgent list |
-| "generate a weekly review" | `weekly-review` | B Pipeline | Week's JSONL → extract topics → activity report |
-| "audit my security setup" | `security-scan` | A Audit | Scan .env, secrets, permissions → scored report |
-| "create HTML from markdown" | `md-to-html` | C Generator | Read .md → apply template → write .html |
+| "summarize meetings and send to TG" | `meeting-digest` | B Pipeline | Krisp → synthesize → telegram send |
+| "nag me about overdue tasks" | `task-nag` | D Integrator | Linear → filter overdue → urgent list |
+| "weekly review from sessions" | `weekly-review` | B Pipeline | JSONL scan → topic extraction → report |
+| "audit my security" | `security-scan` | A Audit | .env, secrets, permissions → scored |
+| "HTML from markdown" | `md-to-html` | C Generator | Read .md → template → write .html |
+| "check vault health" | `vault-health` | A Audit | File count, size, orphans → scored |
 
 ## Common Mistakes
 
 | Mistake | Fix |
 |---------|-----|
-| Description longer than 1 line | Must fit in a skill listing — one sentence max |
-| Adding arguments the skill doesn't need | Only add arguments if behavior genuinely changes |
-| Vague output: "generate a nice report" | Show the EXACT format with box-drawing chars |
-| Missing degradation chains for MCP | Always: try MCP → try file fallback → skip |
-| Skills over 150 lines | Split into 2 skills — a skill should do ONE thing well |
-| Forgetting Common Mistakes table | Every production skill needs one — 3-6 rows minimum |
+| Description > 1 line | One sentence max — must fit skill listing |
+| Args skill doesn't need | Only add if behavior genuinely changes |
+| Vague output: "nice report" | Show EXACT format with box-drawing |
+| No MCP degradation chain | Always: MCP → file fallback → skip |
+| Skill > 150 lines | Split into 2 — a skill does ONE thing |
+| Missing Common Mistakes | Every skill needs 3-6 rows minimum |
+| Not checking mcp.json first | Step 0 discovers what's available |

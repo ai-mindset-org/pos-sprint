@@ -1,11 +1,11 @@
 #!/bin/bash
-# POS Starter Pack — CTRL
-# Install all 4 skills to ~/.claude/skills/
+# POS Starter Pack — CTRL v3
+# Install all 5 skills to ~/.claude/skills/
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TARGET="$HOME/.claude/skills"
 
-echo "ctrl > installing POS Starter Pack..."
+echo "ctrl > installing POS Starter Pack v3..."
 echo ""
 
 installed=0
@@ -22,9 +22,11 @@ done
 echo ""
 echo "ctrl > $installed skills installed to $TARGET"
 echo ""
-echo "try:"
-echo "  /pos-setup         — build POS from zero (start here)"
-echo "  /pos-audit         — scan your POS"
-echo "  /pos-morning       — daily brief"
-echo "  /pos-dashboard-gen — generate dashboard"
-echo "  /pos-skill-factory — create new skills"
+echo "start here:"
+echo "  /pos-setup         — build POS from zero (6-phase pipeline)"
+echo ""
+echo "or jump to:"
+echo "  /pos-audit         — scan and score your setup (0-12)"
+echo "  /pos-morning       — daily brief with focus sentence"
+echo "  /pos-dashboard-gen — terminal-aesthetic HTML dashboard"
+echo "  /pos-skill-factory — create skills from ideas"

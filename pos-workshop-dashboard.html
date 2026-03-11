@@ -1,0 +1,2769 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Sprint S26 — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent: #3B82F6;
+  --accent-light: #EFF6FF;
+  --accent-dim: #2563EB;
+  --bg: #FFFFFF;
+  --bg-card: #FAFAFA;
+  --bg-code: #F5F5F5;
+  --border: #E5E5E5;
+  --border-thin: #F0F0F0;
+  --text: #171717;
+  --text-dim: #737373;
+  --text-muted: #A3A3A3;
+  --red: #DC2626;
+  --red-light: #FEF2F2;
+  --green: #22C55E;
+  --green-light: #F0FDF4;
+  --amber: #F59E0B;
+  --amber-light: #FFFBEB;
+  --violet: #8B5CF6;
+  --violet-light: #F5F3FF;
+  --mono: 'IBM Plex Mono', Monaco, Consolas, monospace;
+  --sans: 'Inter', -apple-system, system-ui, sans-serif;
+  --r: 8px;
+}
+
+html { font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* HEADER */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  background: var(--text);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.logo-text {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.logo-sub {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 0.82rem;
+}
+
+.header-nav a {
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.header-nav a:hover { color: var(--accent); }
+
+.breadcrumb {
+  padding: 10px 32px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-thin);
+}
+.breadcrumb a { color: var(--text-dim); text-decoration: none; }
+.breadcrumb a:hover { color: var(--accent); }
+.breadcrumb span { margin: 0 6px; }
+
+/* LAYOUT */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 0;
+  margin: 0 auto;
+}
+
+.main { padding: 32px 36px; border-right: 1px solid var(--border-thin); }
+.sidebar { padding: 32px 24px; }
+
+/* PAGE HEADER */
+.page-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.status-badge.live { background: var(--accent-light); color: var(--accent); }
+.status-badge.completed { background: var(--green-light); color: var(--green); }
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.page-speakers {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 18px;
+}
+
+/* ACTION BUTTONS */
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.action-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.action-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+.action-btn.primary:hover { background: var(--accent-dim); }
+
+.action-icon { font-size: 0.72rem; }
+
+/* SECTIONS */
+.section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-thin);
+}
+
+/* TIMELINE TABLE */
+.timeline-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.timeline-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-thin);
+  vertical-align: top;
+}
+
+.timeline-table tr:hover { background: var(--accent-light); }
+
+.time-col { white-space: nowrap; color: var(--text-dim); font-variant-numeric: tabular-nums; min-width: 48px; }
+.dur-col { white-space: nowrap; color: var(--text-muted); font-size: 0.75rem; min-width: 40px; }
+.speaker-col { color: var(--accent); font-weight: 500; min-width: 70px; }
+.block-col { font-weight: 500; }
+.desc-col { color: var(--text-dim); font-size: 0.78rem; }
+
+.block-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* CARDS GRID */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  transition: all 0.15s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  position: relative;
+}
+.card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(59,130,246,0.08); }
+
+.card-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.card-desc {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.card-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+.card-tag.skill { background: var(--accent-light); color: var(--accent); }
+.card-tag.doc { background: var(--bg-code); color: var(--text-dim); }
+.card-tag.github { background: #F0FDF4; color: #16A34A; }
+.card-tag.tool { background: var(--amber-light); color: #B45309; }
+.card-tag.idea { background: var(--violet-light); color: var(--violet); }
+
+.card-download {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: white;
+  color: var(--text-dim);
+  font-size: 0.65rem;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: all 0.15s;
+}
+.card-download:hover { border-color: var(--accent); color: var(--accent); }
+
+/* HERO LIST */
+.hero-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-thin);
+  font-size: 0.82rem;
+}
+.hero-row:last-child { border-bottom: none; }
+
+.hero-name {
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.hero-desc { color: var(--text-dim); }
+
+/* SKILL CHIPS */
+.skill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-chip {
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: var(--mono);
+  text-decoration: none;
+  display: inline-block;
+}
+.skill-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.skill-chip.new { border-color: var(--accent); background: var(--accent-light); color: var(--accent); font-weight: 500; }
+
+/* CODE BLOCK */
+.code-block {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  position: relative;
+}
+
+.code-block .copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: white;
+  color: var(--text-dim);
+  font-size: 0.65rem;
+  cursor: pointer;
+  font-family: var(--mono);
+}
+.code-block .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* DOWNLOAD PACK */
+.download-pack {
+  background: var(--accent-light);
+  border: 2px solid var(--accent);
+  border-radius: var(--r);
+  padding: 20px;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.download-pack-info {
+  flex: 1;
+}
+
+.download-pack-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.download-pack-desc {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.download-pack-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--r);
+  background: var(--accent);
+  color: white;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.download-pack-btn:hover { background: var(--accent-dim); }
+
+/* SIDEBAR */
+.sidebar-section {
+  margin-bottom: 28px;
+}
+
+.sidebar-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 0.78rem;
+  color: var(--text);
+}
+
+.sidebar-item a {
+  color: var(--text);
+  text-decoration: none;
+}
+.sidebar-item a:hover { color: var(--accent); }
+
+.sidebar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-thin);
+  font-size: 0.78rem;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--text-dim); }
+.stat-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.speaker-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.speaker-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.speaker-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.speaker-name { font-size: 0.85rem; font-weight: 600; }
+.speaker-role { font-size: 0.72rem; color: var(--text-dim); }
+
+/* CHECKLIST */
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 0.78rem;
+  border-bottom: 1px solid var(--border-thin);
+}
+.checklist-item:last-child { border-bottom: none; }
+
+.check-box {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.check-box:hover { border-color: var(--accent); }
+.check-box.done { background: var(--accent); border-color: var(--accent); }
+
+/* QUOTES */
+.quote-block {
+  border-left: 3px solid var(--accent);
+  padding: 10px 18px;
+  margin: 10px 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+.quote-block .quote-author {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { border-top: 1px solid var(--border); }
+  .main { border-right: none; }
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <a class="site-logo" href="https://learn.aimindset.org/s26">
+    <div class="logo-mark" style="background:#171717;padding:4px;"><img src="logo.png" alt="AI" style="width:24px;height:24px;filter:brightness(10);"></div>
+    <div>
+      <div class="logo-text">AI Mindset</div>
+      <div class="logo-sub">sprint s26</div>
+    </div>
+  </a>
+  <nav class="header-nav">
+    <a href="https://learn.aimindset.org/s26">S26 Lab</a>
+    <a href="https://github.com/ai-mindset-org/pos-sprint">GitHub</a>
+  </nav>
+</header>
+
+<div class="breadcrumb">
+  <a href="https://learn.aimindset.org">Home</a><span>&rsaquo;</span>
+  <a href="https://learn.aimindset.org/s26">S26</a><span>&rsaquo;</span>
+  POS Sprint
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <div class="page-meta">
+    <span class="meta-tag">Sprint &middot; POS-S26</span>
+    <span class="meta-tag">Mar 2&ndash;14</span>
+    <span class="meta-tag">13 days</span>
+    <span class="status-badge live">day 10</span>
+  </div>
+
+  <h1 class="page-title">POS Sprint S26</h1>
+  <div class="page-speakers">Personal Operating System &mdash; from concept to working system in 13 days</div>
+
+  <div class="actions">
+    <a class="action-btn primary" href="https://github.com/ai-mindset-org/pos-sprint" target="_blank"><span class="action-icon">&#8853;</span> GitHub Repo</a>
+    <a class="action-btn" href="https://learn.aimindset.org/s26" target="_blank"><span class="action-icon">&#9654;</span> LMS</a>
+    <button class="action-btn" onclick="downloadAllSkills()"><span class="action-icon">&#8615;</span> download skill pack</button>
+  </div>
+
+  <!-- SPRINT JOURNEY -->
+  <div class="section">
+    <div class="section-title">Sprint Journey &middot; 4 workshops + bonus + demo day</div>
+    <table class="timeline-table">
+      <thead>
+        <tr><th>Date</th><th>Format</th><th>Speaker</th><th colspan="2">Topic</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="time-col">Mar 2</td>
+          <td class="dur-col">WS01</td>
+          <td class="speaker-col">Alex + SK</td>
+          <td><span class="block-num">1</span> <span class="block-col">POS Intro</span></td>
+          <td class="desc-col">CLAUDE.md, skills, 4 pipeline templates, GitHub setup</td>
+        </tr>
+        <tr>
+          <td class="time-col">Mar 3</td>
+          <td class="dur-col">Focus</td>
+          <td class="speaker-col">Alex</td>
+          <td colspan="2" class="desc-col">Context assembly: bio, goals, projects &rarr; CLAUDE.md</td>
+        </tr>
+        <tr>
+          <td class="time-col">Mar 4</td>
+          <td class="dur-col">WS02</td>
+          <td class="speaker-col">Ris + Alex</td>
+          <td><span class="block-num">2</span> <span class="block-col">Agents</span></td>
+          <td class="desc-col">&laquo;Corporation on the computer.&raquo; Micro-apps, Chrome ext, research</td>
+        </tr>
+        <tr>
+          <td class="time-col">Mar 6</td>
+          <td class="dur-col">Bonus</td>
+          <td class="speaker-col">Alex + LI</td>
+          <td><span class="block-num">B</span> <span class="block-col">Physical OS</span></td>
+          <td class="desc-col">Keyboard cost model, desk, multi-screen, Hyper key</td>
+        </tr>
+        <tr>
+          <td class="time-col">Mar 7</td>
+          <td class="dur-col">Office</td>
+          <td class="speaker-col">Alex</td>
+          <td colspan="2" class="desc-col">Office hours: skill atomicity, model selection, Q&amp;A</td>
+        </tr>
+        <tr>
+          <td class="time-col">Mar 9</td>
+          <td class="dur-col">WS03</td>
+          <td class="speaker-col">Ris + Alex</td>
+          <td><span class="block-num">3</span> <span class="block-col">Infrastructure</span></td>
+          <td class="desc-col">8 layers of Personal Corp, OpenClaw, architecture reviews</td>
+        </tr>
+        <tr>
+          <td class="time-col">Mar 11</td>
+          <td class="dur-col">WS04</td>
+          <td class="speaker-col">Alex + SK</td>
+          <td><span class="block-num">4</span> <span class="block-col">Skills &amp; Mission Control</span></td>
+          <td class="desc-col">POS landscape, pipelines, live dashboard, sprint highlights</td>
+        </tr>
+        <tr>
+          <td class="time-col">Mar 14</td>
+          <td class="dur-col">Demo</td>
+          <td class="speaker-col">All</td>
+          <td><span class="block-num">D</span> <span class="block-col">Demo Day</span></td>
+          <td class="desc-col">Participant presentations: what you built in 13 days</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- BEFORE: VOICES -->
+  <div class="section">
+    <div class="section-title">Before &middot; participant voices at sprint start</div>
+    <div class="quote-block">
+      &laquo;&#1048;&#1085;&#1089;&#1090;&#1088;&#1091;&#1084;&#1077;&#1085;&#1090;&#1099; &#1085;&#1077; &#1088;&#1072;&#1079;&#1075;&#1086;&#1074;&#1072;&#1088;&#1080;&#1074;&#1072;&#1102;&#1090; &#1076;&#1088;&#1091;&#1075; &#1089; &#1076;&#1088;&#1091;&#1075;&#1086;&#1084;. &#1053;&#1091; &#1080;&#1083;&#1080; &#1091;&#1089;&#1087;&#1077;&#1096;&#1085;&#1086; &#1088;&#1072;&#1079;&#1075;&#1086;&#1074;&#1072;&#1088;&#1080;&#1074;&#1072;&#1102;&#1090; &#1082;&#1072;&#1082; <strong>&#1075;&#1083;&#1091;&#1093;&#1086;&#1081; &#1089;&#1086; &#1089;&#1083;&#1077;&#1087;&#1099;&#1084;</strong>.&raquo;
+    </div>
+    <div class="quote-block">
+      &laquo;&#1050;&#1072;&#1078;&#1076;&#1099;&#1081; &#1089;&#1077;&#1072;&#1085;&#1089; &#1089; &#1048;&#1048; &#1085;&#1072;&#1095;&#1080;&#1085;&#1072;&#1077;&#1090;&#1089;&#1103; &#1089; &#1095;&#1080;&#1089;&#1090;&#1086;&#1075;&#1086; &#1083;&#1080;&#1089;&#1090;&#1072;. &#1050;&#1086;&#1085;&#1090;&#1077;&#1082;&#1089;&#1090; &#1088;&#1072;&#1079;&#1088;&#1086;&#1079;&#1085;&#1077;&#1085; &#1080; &#1085;&#1077; &#1080;&#1084;&#1077;&#1077;&#1090; &#1089;&#1080;&#1085;&#1077;&#1088;&#1075;&#1080;&#1095;&#1077;&#1089;&#1082;&#1086;&#1075;&#1086; &#1101;&#1092;&#1092;&#1077;&#1082;&#1090;&#1072;.&raquo;
+    </div>
+    <div class="quote-block">
+      &laquo;<strong>&#1052;&#1091;&#1079;&#1077;&#1081; &#1089;&#1080;&#1089;&#1090;&#1077;&#1084;</strong> &mdash; &#1080;&#1085;&#1089;&#1090;&#1088;&#1091;&#1084;&#1077;&#1085;&#1090;&#1099; &#1082;&#1088;&#1072;&#1089;&#1080;&#1074;&#1099;&#1077;, &#1072; &#1078;&#1080;&#1079;&#1085;&#1080; &#1074; &#1085;&#1080;&#1093; &#1085;&#1077;&#1090;.&raquo;
+    </div>
+    <div class="quote-block">
+      &laquo;&#1047;&#1072;&#1076;&#1072;&#1095;&#1080; &#1087;&#1088;&#1080;&#1083;&#1077;&#1090;&#1072;&#1102;&#1090; &#1074; Telegram &#1080; &#1090;&#1072;&#1084; &#1078;&#1077; <strong>&#1090;&#1086;&#1085;&#1091;&#1090;</strong>.&raquo;
+    </div>
+    <div class="quote-block">
+      &laquo;Obsidian &#1088;&#1072;&#1089;&#1090;&#1105;&#1090;, &#1085;&#1086; &#1085;&#1077; &#1088;&#1072;&#1073;&#1086;&#1090;&#1072;&#1077;&#1090; &#1082;&#1072;&#1082; &#1089;&#1080;&#1089;&#1090;&#1077;&#1084;&#1072; &mdash; &#1089;&#1082;&#1086;&#1088;&#1077;&#1077; <strong>&#1089;&#1082;&#1083;&#1072;&#1076;</strong>.&raquo;
+    </div>
+    <div class="quote-block">
+      &laquo;&#1042;&#1089;&#1105; &#1076;&#1077;&#1088;&#1078;&#1080;&#1090;&#1089;&#1103; &#1085;&#1072; &#1091;&#1089;&#1080;&#1083;&#1080;&#1080; &#1080; &#1084;&#1086;&#1090;&#1080;&#1074;&#1072;&#1094;&#1080;&#1080;, &#1072; &#1085;&#1077; &#1085;&#1072; <strong>&#1089;&#1080;&#1089;&#1090;&#1077;&#1084;&#1077;</strong>.&raquo;
+    </div>
+    <div class="quote-block">
+      &laquo;&#1055;&#1086;&#1087;&#1099;&#1090;&#1082;&#1072; &#1089;&#1086;&#1079;&#1076;&#1072;&#1090;&#1100; OS &mdash; &#1087;&#1088;&#1086;&#1094;&#1077;&#1089;&#1089; <strong>&#1087;&#1086;&#1089;&#1090;&#1088;&#1086;&#1077;&#1085;&#1080;&#1103; &#1082;&#1086;&#1089;&#1084;&#1086;&#1083;&#1105;&#1090;&#1072;</strong>.&raquo;
+    </div>
+  </div>
+
+  <!-- ARTIFACTS: SKILL PACK -->
+  <div class="section">
+    <div class="section-title">Skill Pack &middot; CTRL</div>
+    <div class="cards">
+      <div class="card">
+        <button class="card-download" onclick="downloadSkill('pos-audit')">download</button>
+        <div class="card-title">/pos-audit</div>
+        <div class="card-desc">Scan your POS components. CLAUDE.md, skills, MCP servers, memory. Score 0-10 with gap suggestions.</div>
+        <span class="card-tag skill">skill</span>
+      </div>
+      <div class="card">
+        <button class="card-download" onclick="downloadSkill('pos-morning')">download</button>
+        <div class="card-title">/pos-morning</div>
+        <div class="card-desc">Morning pipeline. Calendar + tasks + sessions &rarr; daily brief. Adapts to available integrations.</div>
+        <span class="card-tag skill">skill</span>
+      </div>
+      <div class="card">
+        <button class="card-download" onclick="downloadSkill('pos-dashboard-gen')">download</button>
+        <div class="card-title">/pos-dashboard-gen</div>
+        <div class="card-desc">Generate personal HTML dashboard from context. Single file, no server. Opens in browser.</div>
+        <span class="card-tag skill">skill</span>
+      </div>
+      <div class="card">
+        <button class="card-download" onclick="downloadSkill('pos-skill-factory')">download</button>
+        <div class="card-title">/pos-skill-factory</div>
+        <div class="card-desc">Create new skills from natural language. Describe what you want &rarr; get a working SKILL.md.</div>
+        <span class="card-tag skill">skill</span>
+      </div>
+      <div class="card">
+        <button class="card-download" onclick="downloadSkill('pos-setup')">download</button>
+        <div class="card-title">/pos-setup</div>
+        <div class="card-desc">Build your POS from zero. 6-phase pipeline &mdash; context, MCP, skills, operations, dashboard. Auto-detects current state.</div>
+        <span class="card-tag skill">skill</span>
+      </div>
+    </div>
+
+    <!-- EXTENDED PACK INFO -->
+    <div class="cards" style="margin-top: 12px;">
+      <div class="card" style="border-left: 3px solid var(--green);">
+        <div class="card-title" style="color: var(--green);">new: /pos-setup</div>
+        <div class="card-desc">Start here if you're building from scratch. The setup wizard detects what you have, skips completed phases, and guides you through each layer of your Personal Operating System.</div>
+        <span class="card-tag skill">orchestrator</span>
+      </div>
+
+    <!-- DOWNLOAD ALL -->
+    <div class="download-pack">
+      <div class="download-pack-info">
+        <div class="download-pack-title">CTRL Skill Pack &mdash; 5 skills</div>
+        <div class="download-pack-desc">Download install script. Run in terminal to install all 4 skills to ~/.claude/skills/</div>
+      </div>
+      <a class="download-pack-btn" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skill-pack" target="_blank" style="text-decoration:none;display:inline-block;">GitHub</a>
+      <button class="download-pack-btn" onclick="downloadAllSkills()">Download install.sh</button>
+    </div>
+
+    <div class="code-block" style="margin-top: 14px;">
+      <button class="copy-btn" onclick="copyInstall()">copy</button>
+      <code id="install-code"># install CTRL skill pack (paste in terminal)<br>
+git clone https://github.com/ai-mindset-org/pos-sprint.git<br>
+cd pos-sprint &amp;&amp; bash skill-pack/install.sh</code>
+    </div>
+  </div>
+
+  <!-- SKILL ALIGNMENT -->
+  <div class="section">
+    <div class="section-title">Ideas &middot; what to build next</div>
+    <div class="cards">
+      <div class="card" style="border-color: var(--violet); border-width: 1.5px;">
+        <div class="card-title">Skill Alignment Analyzer</div>
+        <div class="card-desc">Analyze your installed skills against your personal values and project goals. Finds gaps: "You care about X but have no automation for it." Suggests what skills to create or install next.</div>
+        <span class="card-tag idea">concept</span>
+      </div>
+      <div class="card" style="border-color: var(--violet); border-width: 1.5px;">
+        <div class="card-title">Values-Based POS Score</div>
+        <div class="card-desc">Extended /pos-audit that reads your CLAUDE.md + project context, extracts your values ("deep work", "async comms", "writing"), and scores your POS on how well it supports each value.</div>
+        <span class="card-tag idea">concept</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY SKILLS -->
+  <div class="section">
+    <div class="section-title">Community Skills &middot; 20 from <a href="https://github.com/ai-mindset-org/pos-sprint" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub</a></div>
+
+    <div style="font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">Content &amp; Marketing</div>
+    <div class="cards" style="margin-bottom:16px;">
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/writing-content" target="_blank">
+        <div class="card-title">/writing-content</div>
+        <div class="card-desc">Vibe-marketing texts by Julian Shapiro framework. AI-slop detection, scoring 0-5.</div>
+        <span class="card-tag github">@khabaroff</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/ai-bear-newsletter" target="_blank">
+        <div class="card-title">/ai-bear-newsletter</div>
+        <div class="card-desc">LinkedIn/Substack articles from Notion drafts. Full newsletter pipeline.</div>
+        <span class="card-tag github">@sbg075</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/seo-strategist" target="_blank">
+        <div class="card-title">/seo-strategist</div>
+        <div class="card-desc">Site-wide SEO: keyword research, tech audits, competitive positioning.</div>
+        <span class="card-tag github">@khabaroff</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/deck" target="_blank">
+        <div class="card-title">/deck</div>
+        <div class="card-desc">HTML presentations: terminal or editorial style. Single-file, zero deps.</div>
+        <span class="card-tag github">@aPoWall</span>
+      </a>
+    </div>
+
+    <div style="font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">Knowledge Management</div>
+    <div class="cards" style="margin-bottom:16px;">
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/tg-saved" target="_blank">
+        <div class="card-title">/tg-saved</div>
+        <div class="card-desc">TG Saved Messages &rarr; deep analysis &rarr; structured Obsidian notes.</div>
+        <span class="card-tag github">@gohardstronger</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/yt-transcribe" target="_blank">
+        <div class="card-title">/yt-transcribe</div>
+        <div class="card-desc">YouTube &rarr; Whisper (Apple Silicon) &rarr; searchable Obsidian KB.</div>
+        <span class="card-tag github">@gohardstronger</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/project-knowledge-base" target="_blank">
+        <div class="card-title">/project-knowledge-base</div>
+        <div class="card-desc">Collects PKB.md from Drive, Gmail, Telegram, moo.team, transcripts.</div>
+        <span class="card-tag github">@zariavv</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/learning-loop" target="_blank">
+        <div class="card-title">/learning-loop</div>
+        <div class="card-desc">Updates Learning Loop section in POS markdown. Tracks understanding, priorities, artifacts.</div>
+        <span class="card-tag github">@valeryvpetrov</span>
+      </a>
+    </div>
+
+    <div style="font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">Business &amp; Ops</div>
+    <div class="cards" style="margin-bottom:16px;">
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/business-analyst-toolkit" target="_blank">
+        <div class="card-title">/business-analyst-toolkit</div>
+        <div class="card-desc">Process analysis, requirements docs, workflow optimization for retail &amp; supply chain.</div>
+        <span class="card-tag github">@khabaroff</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/product-strategist" target="_blank">
+        <div class="card-title">/product-strategist</div>
+        <div class="card-desc">OKR cascade, market analysis, vision setting, team scaling for Head of Product.</div>
+        <span class="card-tag github">@khabaroff</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/find-vendor" target="_blank">
+        <div class="card-title">/find-vendor</div>
+        <div class="card-desc">Vendor search from Baserow: NL query &rarr; JSON &rarr; filter &rarr; rank &rarr; summary.</div>
+        <span class="card-tag github">@fmbo31</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/jira-monitor" target="_blank">
+        <div class="card-title">/jira-monitor</div>
+        <div class="card-desc">Kanban metrics from DuckDB: CLT, cycle time, throughput, flow efficiency, WIP.</div>
+        <span class="card-tag github">@divnomorskoe</span>
+      </a>
+    </div>
+
+    <div style="font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">DevOps &amp; Sessions</div>
+    <div class="cards" style="margin-bottom:16px;">
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/session-management" target="_blank">
+        <div class="card-title">/session-management</div>
+        <div class="card-desc">Save/restore/compress sessions. Context handoff for multi-session workflows.</div>
+        <span class="card-tag github">@alexfrmn</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/skill-security" target="_blank">
+        <div class="card-title">/skill-security</div>
+        <div class="card-desc">7-volume security audit of skills. 100+ checks: credentials, caches, shareability, architecture.</div>
+        <span class="card-tag github">@usatovw</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/daily-work" target="_blank">
+        <div class="card-title">/daily-work</div>
+        <div class="card-desc">Auto daily report: activity log + git + session checkpoints &rarr; Obsidian analytics.</div>
+        <span class="card-tag github">@gohardstronger</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/markdown-new" target="_blank">
+        <div class="card-title">/markdown-new</div>
+        <div class="card-desc">URL &rarr; clean Markdown via markdown.new. For RAG, summarization, archiving.</div>
+        <span class="card-tag github">@khabaroff</span>
+      </a>
+    </div>
+
+    <div style="font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">Education</div>
+    <div class="cards" style="margin-bottom:16px;">
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/sergeiriumkin" target="_blank">
+        <div class="card-title">/student-agent-os</div>
+        <div class="card-desc">Student response agent: auto-reply, announcements, teacher escalation.</div>
+        <span class="card-tag github">@sergeyryumkin</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/sergeiriumkin" target="_blank">
+        <div class="card-title">/telegram-faq-bot</div>
+        <div class="card-desc">TG FAQ-bot for student groups. Auto-answers, teacher escalation, no API key.</div>
+        <span class="card-tag github">@sergeyryumkin</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/summarize-comments" target="_blank">
+        <div class="card-title">/summarize-comments</div>
+        <div class="card-desc">LLM summary of manager feedback on contractors. JSON export for pipelines.</div>
+        <span class="card-tag github">@fmbo31</span>
+      </a>
+      <a class="card" href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/roi-razvitie-draft" target="_blank">
+        <div class="card-title">/roi-razvitie-draft</div>
+        <div class="card-desc">Auto-generate weekly meeting doc with agenda and notes structure.</div>
+        <span class="card-tag github">@bykovvasily</span>
+      </a>
+    </div>
+
+    <div style="font-size:0.75rem;color:var(--text-dim);margin-top:4px;">+ <a href="https://github.com/ai-mindset-org/pos-sprint/tree/main/Chrome%20Extensions/ev_garde" target="_blank" style="color:var(--accent);">Chrome Ext ev_garde</a> &middot; <a href="https://github.com/ai-mindset-org/pos-sprint/tree/main/practice" target="_blank" style="color:var(--accent);">naming-convention</a> &middot; <a href="https://github.com/ai-mindset-org/pos-sprint/tree/main/practice" target="_blank" style="color:var(--accent);">orchestration-rules</a> &middot; <a href="https://github.com/ai-mindset-org/pos-sprint/tree/main/skills/session-status" target="_blank" style="color:var(--accent);">session-status</a></div>
+  </div>
+
+  <!-- COMMUNITY HEROES -->
+  <div class="section">
+    <div class="section-title">Sprint Highlights &middot; community heroes</div>
+    <div class="hero-row">
+      <span class="hero-name">Stanislav F.</span>
+      <span class="hero-desc">93 messages, de-facto co-curator. "Working with context = describing tasks for an employee with total amnesia"</span>
+    </div>
+    <div class="hero-row">
+      <span class="hero-name">Mikhail</span>
+      <span class="hero-desc">Vibe-coded a free Wispr alternative in 2 hours</span>
+    </div>
+    <div class="hero-row">
+      <span class="hero-name">Vitaly</span>
+      <span class="hero-desc">ETL skill from 6 sources, 45 files, first PR ever</span>
+    </div>
+    <div class="hero-row">
+      <span class="hero-name">vasili</span>
+      <span class="hero-desc">Reverse-engineered Claude Code usage stats</span>
+    </div>
+    <div class="hero-row">
+      <span class="hero-name">Igor</span>
+      <span class="hero-desc">Spanish tutor on Telegram + Sonnet</span>
+    </div>
+    <div class="hero-row">
+      <span class="hero-name">Ruslan</span>
+      <span class="hero-desc">Assistant task control automation &mdash; first production case</span>
+    </div>
+    <div class="hero-row">
+      <span class="hero-name">Alexander</span>
+      <span class="hero-desc">Chrome Extension &rarr; personal command center</span>
+    </div>
+    <div class="hero-row">
+      <span class="hero-name">Arseny</span>
+      <span class="hero-desc">Chrome Extension with voice input and Pomodoro &mdash; no API key</span>
+    </div>
+
+    <div style="margin-top: 18px; padding: 16px; background: var(--accent-light); border-radius: var(--r); font-size: 0.82rem; line-height: 1.7;">
+      <strong style="font-size: 0.85rem;">What the Sprint Produced</strong><br>
+      20 skills in shared repo &middot; 11 merged PRs &middot; 13 contributors &middot; 2 Chrome extensions &middot; morning/evening pipelines &middot; security audit framework &middot; personal dashboards &middot; TG bots &middot; knowledge bases &middot; vendor search systems &middot; Jira analytics &middot; student agent OS
+    </div>
+  </div>
+
+  <!-- RESEARCH -->
+  <div class="section">
+    <div class="section-title">Research &middot; 40+ sources</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">POS Landscape</div>
+        <div class="card-desc">30-min lecture content. 8 authors, ecosystem map, PKM vs POS table, timeline 2020-2026.</div>
+        <span class="card-tag doc">research</span>
+      </div>
+      <div class="card">
+        <div class="card-title">Deep Research</div>
+        <div class="card-desc">7 Exa threads, 35+ sources. Context engineering, AKM, vibe coding trends, competitor gap analysis.</div>
+        <span class="card-tag doc">research</span>
+      </div>
+      <div class="card">
+        <div class="card-title">Chat Analysis</div>
+        <div class="card-desc">500 messages, 42 participants, 7 days. Heroes, cases, quotes, unanswered questions.</div>
+        <span class="card-tag doc">analysis</span>
+      </div>
+      <div class="card">
+        <div class="card-title">Mission Control</div>
+        <div class="card-desc">Dashboard implementation research. Obsidian REST API, MCP wrapper, VOX advisor architecture.</div>
+        <span class="card-tag tool">implementation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- AFTER: TRANSFORMATION -->
+  <div class="section">
+    <div class="section-title">After &middot; participant voices during sprint</div>
+    <div class="quote-block">
+      &laquo;12 &#1095;&#1072;&#1089;&#1086;&#1074;, &#1076;&#1072; &#1103; &#1091;&#1078;&#1077; &#1087;&#1072;&#1088;&#1091; &#1085;&#1077;&#1076;&#1077;&#1083;&#1100; &#1085;&#1077; &#1084;&#1086;&#1075;&#1091; &#1086;&#1090;&#1083;&#1080;&#1087;&#1085;&#1091;&#1090;&#1100;. &#1054;&#1097;&#1091;&#1097;&#1077;&#1085;&#1080;&#1077; &#1082;&#1072;&#1082; &#1082;&#1086;&#1075;&#1076;&#1072; &#1074; &#1076;&#1077;&#1090;&#1089;&#1090;&#1074;&#1077; &#1087;&#1077;&#1088;&#1074;&#1099;&#1081; &#1088;&#1072;&#1079; &#1076;&#1072;&#1083;&#1080; &#1074; &#1082;&#1086;&#1084;&#1087; &#1087;&#1086;&#1080;&#1075;&#1088;&#1072;&#1090;&#1100; &#1080; &#1101;&#1090;&#1086;&#1090; <strong>&#1101;&#1092;&#1092;&#1077;&#1082;&#1090; &#1095;&#1091;&#1076;&#1072;</strong>.&raquo;
+      <div class="quote-author">&mdash; &#1052;&#1080;&#1093;&#1072;&#1080;&#1083;, Mar 9</div>
+    </div>
+    <div class="quote-block">
+      &laquo;&#1053;&#1072;&#1091;&#1095;&#1080;&#1090;&#1100;&#1089;&#1103; &#1088;&#1072;&#1073;&#1086;&#1090;&#1072;&#1090;&#1100; &#1089; &#1082;&#1086;&#1085;&#1090;&#1077;&#1082;&#1089;&#1090;&#1086;&#1084; = &#1085;&#1072;&#1091;&#1095;&#1080;&#1090;&#1100;&#1089;&#1103; &#1086;&#1087;&#1080;&#1089;&#1099;&#1074;&#1072;&#1090;&#1100; &#1074;&#1089;&#1105; &#1076;&#1083;&#1103; &#1085;&#1077; &#1086;&#1095;&#1077;&#1085;&#1100; &#1091;&#1084;&#1085;&#1086;&#1075;&#1086; &#1089;&#1086;&#1090;&#1088;&#1091;&#1076;&#1085;&#1080;&#1082;&#1072;, &#1089;&#1090;&#1088;&#1072;&#1076;&#1072;&#1102;&#1097;&#1077;&#1075;&#1086; <strong>&#1090;&#1086;&#1090;&#1072;&#1083;&#1100;&#1085;&#1086;&#1081; &#1072;&#1084;&#1085;&#1077;&#1079;&#1080;&#1077;&#1081;</strong>.&raquo;
+      <div class="quote-author">&mdash; &#1057;&#1090;&#1072;&#1085;&#1080;&#1089;&#1083;&#1072;&#1074;, Mar 10</div>
+    </div>
+    <div class="quote-block">
+      &laquo;&#1055;&#1086;&#1079;&#1072;&#1074;&#1095;&#1077;&#1088;&#1072; &#1077;&#1097;&#1105; &#1085;&#1077; &#1079;&#1085;&#1072;&#1083; &#1082;&#1072;&#1082; &#1088;&#1072;&#1073;&#1086;&#1090;&#1072;&#1090;&#1100; &#1089; Claude Code, &#1095;&#1090;&#1086; &#1090;&#1072;&#1082;&#1086;&#1077; Obsidian, MCP. &#1040; &#1089;&#1077;&#1075;&#1086;&#1076;&#1085;&#1103; &#1091;&#1078;&#1077; <strong>&#1089;&#1076;&#1077;&#1083;&#1072;&#1083; &#1087;&#1077;&#1088;&#1074;&#1099;&#1077; Skills</strong>. &#1048; &#1101;&#1090;&#1086; &#1082;&#1083;&#1072;&#1089;&#1089;&#1085;&#1086;.&raquo;
+      <div class="quote-author">&mdash; &#1040;&#1083;&#1077;&#1082;&#1089;&#1077;&#1081;, Mar 5</div>
+    </div>
+    <div class="quote-block">
+      &laquo;&#1059;&#1095;&#1080;&#1090;&#1100;&#1089;&#1103; &#1087;&#1086;&#1083;&#1100;&#1079;&#1086;&#1074;&#1072;&#1090;&#1100;&#1089;&#1103; &#1089;&#1090;&#1086;&#1080;&#1090; &#1080;&#1084;&#1077;&#1085;&#1085;&#1086; &#1072;&#1075;&#1077;&#1085;&#1090;&#1089;&#1082;&#1086;&#1081; &#1089;&#1088;&#1077;&#1076;&#1086;&#1081;. &#1058;&#1091;&#1090; &#1074;&#1072;&#1078;&#1077;&#1085; <strong>&#1089;&#1072;&#1084; &#1087;&#1086;&#1076;&#1093;&#1086;&#1076;</strong>, &#1072; &#1085;&#1077; &#1082;&#1086;&#1085;&#1082;&#1088;&#1077;&#1090;&#1085;&#1099;&#1081; &#1080;&#1085;&#1089;&#1090;&#1088;&#1091;&#1084;&#1077;&#1085;&#1090;.&raquo;
+      <div class="quote-author">&mdash; &#1057;&#1090;&#1072;&#1085;&#1080;&#1089;&#1083;&#1072;&#1074;, Mar 9</div>
+    </div>
+  </div>
+
+  <!-- EXPERT VOICES -->
+  <div class="section">
+    <div class="section-title">Expert Voices</div>
+    <div class="quote-block">
+      "You don't need a better AI. You need a <strong>better context architecture</strong>."
+    </div>
+    <div class="quote-block">
+      "We're using AI completely backwards. Instead of invoking AI, AI should invoke us for approval. Welcome to <strong>Agentic Knowledge Management</strong>."
+      <div class="quote-author">&mdash; S&eacute;bastien Dubois</div>
+    </div>
+    <div class="quote-block">
+      "I built an AI operating system for my brain. Then it <strong>started improving itself</strong>."
+      <div class="quote-author">&mdash; Bradley Hope</div>
+    </div>
+    <div class="quote-block">
+      "After switching to Claude Code, I got a ~20x productivity boost. After adding OpenClaw, I got another <strong>50x</strong>."
+      <div class="quote-author">&mdash; Jonathan Tsai</div>
+    </div>
+    <div class="quote-block">
+      "The hottest new programming language is <strong>English</strong>."
+      <div class="quote-author">&mdash; Andrej Karpathy</div>
+    </div>
+    <div class="quote-block">
+      "This is my second brain. And recently, it <strong>started thinking back</strong>."
+      <div class="quote-author">&mdash; Kenneth Reitz</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+  <div class="sidebar-section">
+    <div class="sidebar-title">Sprint &middot; POS-S26</div>
+    <div style="font-size: 0.92rem; font-weight: 600; margin-bottom: 4px;">POS Sprint S26</div>
+    <div style="font-size: 0.75rem; color: var(--text-dim);">Mar 2&ndash;14 &middot; 13 days</div>
+    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Personal OS &mdash; from zero to working system</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-title">Speakers</div>
+    <div class="speaker-card">
+      <div class="speaker-avatar"><img src="alexander-povaliaev.jpg" alt="AP"></div>
+      <div>
+        <div class="speaker-name">Aleksandr Povalyaev</div>
+        <div class="speaker-role">Founder</div>
+      </div>
+    </div>
+    <div class="speaker-card">
+      <div class="speaker-avatar"><img src="sergey-khabarov.jpg" alt="SK"></div>
+      <div>
+        <div class="speaker-name">Sergey Khabarov</div>
+        <div class="speaker-role">Context Engineering, Automation</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-title">Sprint Stats</div>
+    <div class="stat-row"><span class="stat-label">Duration</span><span class="stat-value">13 days</span></div>
+    <div class="stat-row"><span class="stat-label">Workshops</span><span class="stat-value">4 + bonus</span></div>
+    <div class="stat-row"><span class="stat-label">Participants</span><span class="stat-value">65</span></div>
+    <div class="stat-row"><span class="stat-label">Active in Chat</span><span class="stat-value">42</span></div>
+    <div class="stat-row"><span class="stat-label">Chat Messages</span><span class="stat-value">500</span></div>
+    <div class="stat-row"><span class="stat-label">Skills in Repo</span><span class="stat-value">20</span></div>
+    <div class="stat-row"><span class="stat-label">Pull Requests</span><span class="stat-value">11</span></div>
+    <div class="stat-row"><span class="stat-label">Contributors</span><span class="stat-value">13</span></div>
+    <div class="stat-row"><span class="stat-label">Research Sources</span><span class="stat-value">40+</span></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-title">Sprint Checklist</div>
+    <div class="checklist-item">
+      <div class="check-box" onclick="this.classList.toggle('done')"></div>
+      <span>Create your CLAUDE.md</span>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box" onclick="this.classList.toggle('done')"></div>
+      <span>Install CTRL skill pack (4 skills)</span>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box" onclick="this.classList.toggle('done')"></div>
+      <span>Run /pos-audit &mdash; check your POS score</span>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box" onclick="this.classList.toggle('done')"></div>
+      <span>Run /pos-morning &mdash; generate first daily brief</span>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box" onclick="this.classList.toggle('done')"></div>
+      <span>Create 1 custom skill with /pos-skill-factory</span>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box" onclick="this.classList.toggle('done')"></div>
+      <span>Submit PR to pos-sprint repo</span>
+    </div>
+    <div class="checklist-item">
+      <div class="check-box" onclick="this.classList.toggle('done')"></div>
+      <span>Present at Demo Day (Sat 10:00 CET)</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-title">All Workshops</div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--green);"></div><a href="https://learn.aimindset.org/s26/workshops/pos-ws01">WS01 &mdash; POS Intro</a></div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--green);"></div><a href="https://learn.aimindset.org/s26/workshops/pos-ws02">WS02 &mdash; Agents</a></div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--green);"></div><a href="https://learn.aimindset.org/s26/workshops/pos-ws03">WS03 &mdash; Infrastructure</a></div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--accent);"></div><a href="https://learn.aimindset.org/s26/workshops/pos-ws04">WS04 &mdash; Skills</a></div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--green);"></div><a href="#">Bonus &mdash; Physical OS</a></div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--text-muted);"></div><a href="#">Demo Day (Sat 10:00)</a></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-title">4 Sprint Layers</div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--green);"></div> <span><strong>Foundation</strong> &mdash; CLAUDE.md, context, vault</span></div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--green);"></div> <span><strong>Agents</strong> &mdash; skills, pipelines, corporation</span></div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--green);"></div> <span><strong>Infrastructure</strong> &mdash; terminal, automation</span></div>
+    <div class="sidebar-item"><div class="sidebar-dot" style="background: var(--accent);"></div> <span><strong>System</strong> &mdash; assembly, packaging, story</span></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-title">Approaches Used</div>
+    <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.7;">
+      <div style="margin-bottom: 6px;"><strong style="color: var(--text);">Presentation</strong> &mdash; single-file HTML, no dependencies, LMS aesthetic. Deployed as static page.</div>
+      <div style="margin-bottom: 6px;"><strong style="color: var(--text);">Live Dashboard</strong> &mdash; FastAPI + vanilla JS on localhost. Real-time data from Linear, Calendar, Claude sessions.</div>
+      <div style="margin-bottom: 6px;"><strong style="color: var(--text);">Skill Pack</strong> &mdash; plain markdown SKILL.md files. Zero dependencies. Copy to ~/.claude/skills/ and use.</div>
+      <div><strong style="color: var(--text);">Research</strong> &mdash; parallel sub-agents (Exa + Sonnet) for deep research, background execution, cached results.</div>
+    </div>
+  </div>
+
+</aside>
+
+</div>
+
+<script>
+// ═══ EMBEDDED SKILL FILES ═══
+const SKILLS = {
+'pos-audit': `---
+name: pos-audit
+description: Scan your POS infrastructure — CLAUDE.md, skills, MCP servers, memory, hooks, settings. Score 0-12 with gap analysis.
+version: 3.0
+user_invocable: true
+---
+
+# POS Audit — Infrastructure Scanner
+
+Scan your entire Claude Code setup, cross-reference components, and produce a scored assessment with actionable gaps. Based on 6 diagnostic layers matching the POS setup pipeline.
+
+## Step 0: Discover MCP Servers
+
+Read MCP configuration BEFORE scanning anything else — the server list drives capability detection.
+
+\`\`\`bash
+cat ~/.claude/mcp.json 2>/dev/null
+cat .claude/mcp.json 2>/dev/null
+\`\`\`
+
+Parse JSON and categorize each server:
+
+| Category | Server Examples | POS Function |
+|----------|----------------|--------------|
+| Tasks | linear, jira | Sprint awareness, status tracking |
+| Calendar | krisp, google-calendar | Time awareness, meeting prep |
+| Search | exa, context7 | Research, documentation, fact-checking |
+| Messaging | telegram, slack | Brief delivery, team communication |
+| Files | filesystem | Cross-project file access |
+| Browser | playwright, browsermcp | Screenshots, web interaction |
+| Notes | notion, obsidian | Knowledge base queries |
+| Deploy | netlify, vercel | CI/CD management |
+
+**Capability score**: count CATEGORIES covered, not server count. 5 filesystem mounts = 1 category.
+
+Also check for deferred/marketplace servers by scanning skill files for ToolSearch patterns:
+
+\`\`\`bash
+grep -r "ToolSearch\\|mcp__" ~/.claude/skills/*/SKILL.md 2>/dev/null | grep -o 'mcp__[a-z_]*' | sort -u
+\`\`\`
+
+This reveals servers used in skills but not in mcp.json (deferred servers loaded on-demand).
+
+## Step 1: CLAUDE.md Analysis (Context Layer)
+
+\`\`\`bash
+cat ~/.claude/CLAUDE.md 2>/dev/null | wc -l
+find . -name "CLAUDE.md" -maxdepth 2 2>/dev/null
+find . -name "AGENTS.md" -maxdepth 2 2>/dev/null
+\`\`\`
+
+**Parse and report sections** — don't just count lines:
+
+| Section | What to look for | Quality signal |
+|---------|-----------------|----------------|
+| Formatting | Bold rules, markdown standards | Has specific rules, not "be clear" |
+| Naming | \`{project} {type} description – date\` convention | EN dash, date at end, project codes |
+| Integrations | MCP references, service names | References match installed servers |
+| Workflows | Pipelines, morning routine, review cadence | Operational, not aspirational |
+| Context mgmt | Handoff protocol, footer format | Threshold-based, symbols defined |
+| Eval protocol | T/R/C binary assessment | Rubric exists, footer format defined |
+| Linear awareness | Task detection, footer display | Action suggestions, URL patterns |
+
+**Cross-reference**: check if tools/skills mentioned in CLAUDE.md actually exist.
+
+\`\`\`bash
+# Extract skill names mentioned in CLAUDE.md
+grep -o '/[a-z-]*' ~/.claude/CLAUDE.md 2>/dev/null | sort -u
+\`\`\`
+
+Compare against installed skills — flag ghosts (mentioned but missing) and orphans (installed but never referenced).
+
+## Step 2: Skills Inventory
+
+\`\`\`bash
+# Global skills
+ls ~/.claude/skills/*/SKILL.md 2>/dev/null
+ls ~/.claude/skills/*.md 2>/dev/null
+
+# Project skills
+ls .claude/skills/*/SKILL.md 2>/dev/null
+\`\`\`
+
+For each skill:
+- Read first 5 lines for \`name:\` and \`description:\` from YAML frontmatter
+- Categorize: \`infrastructure\` | \`workflow\` | \`integration\` | \`content\` | \`creative\` | \`utility\`
+- Flag skills without proper YAML frontmatter (not production-ready)
+
+### Skill Pattern Detection
+
+Count skills by pattern:
+
+| Pattern | Signal | Examples |
+|---------|--------|---------|
+| A: Audit | scans, scores, reports | pos-audit, vault-cleanup |
+| B: Pipeline | gathers from sources, synthesizes | pos-morning, research, daily-focus |
+| C: Generator | produces files/artifacts | pos-dashboard-gen, deck, imagine |
+| D: Integrator | wraps MCP with opinionated defaults | linear-action, telegram, calendar |
+
+A healthy POS has skills in at least 3 of 4 patterns.
+
+## Step 3: MCP Capability Matrix
+
+Using servers from Step 0, test each:
+
+\`\`\`
+ToolSearch: "+{server_name}"
+\`\`\`
+
+Report status:
+
+\`\`\`
+  MCP CAPABILITY MATRIX
+  ├─ linear             tasks          ✓ loaded
+  ├─ krisp              meetings       ✓ loaded
+  ├─ telegram           messaging      ✓ loaded
+  ├─ exa                search         ✓ loaded (deferred)
+  ├─ filesystem         files          ✓ loaded
+  ├─ playwright         browser        ✓ loaded (deferred)
+  └─ context7           docs           ✓ loaded (deferred)
+\`\`\`
+
+Statuses: \`✓ loaded\` | \`✗ config only\` (in mcp.json but not responding) | \`◌ deferred\` (used in skills, not in mcp.json)
+
+## Step 4: Memory & Persistence
+
+\`\`\`bash
+# Auto memory files
+find ~/.claude/projects -name "MEMORY.md" 2>/dev/null
+
+# Memory file count and size
+find ~/.claude/projects -path "*/memory/*" -type f 2>/dev/null | wc -l
+du -sh ~/.claude/projects/*/memory/ 2>/dev/null
+
+# Episodic memory plugin
+find ~/.claude -path "*episodic*" -type d 2>/dev/null
+\`\`\`
+
+Report: project count with memory, total files, total size, most recently updated.
+
+**Quality check**: read MEMORY.md content — is it useful or just boilerplate? Look for:
+- Named conventions or patterns
+- Project-specific decisions
+- Cross-session state (e.g., Linear task caches)
+
+## Step 5: Hooks & Automation
+
+\`\`\`bash
+cat ~/.claude/hooks.json 2>/dev/null
+cat ~/.claude/settings.json 2>/dev/null | grep -A5 '"hooks"'
+ls ~/.claude/hooks/ 2>/dev/null
+\`\`\`
+
+For each hook, report:
+- **Trigger**: \`SessionStart\` | \`SessionEnd\` | \`PostToolUse:Write\` | \`PreToolUse\` | etc.
+- **Script**: what it does (read the script file)
+- **Impact**: what POS capability it enables
+
+### Known Hook Patterns
+
+| Hook | Trigger | POS Capability |
+|------|---------|---------------|
+| Linear sync | SessionStart | Linear Awareness Layer in footer |
+| Ambient advisor | SessionStart | Background research auto-trigger |
+| Open in Obsidian | PostToolUse:Write | Auto-open .md in Obsidian |
+| Session logging | SessionEnd | Linear task reference tracking |
+| Daily sessions | SessionEnd | Session history capture |
+
+## Step 6: Settings & Permissions
+
+\`\`\`bash
+cat ~/.claude/settings.json 2>/dev/null
+\`\`\`
+
+Report:
+- **Permission mode**: \`default\` | \`dontAsk\` | \`plan\` | \`bypassPermissions\`
+- **Allowed tools**: explicit allow patterns
+- **Plugins**: installed plugin list with versions
+- **StatusLine**: custom or default
+- **Additional directories**: extra paths in context
+
+## Output Format
+
+\`\`\`
+┌─────────────────────────────────────────────────────┐
+│  POS AUDIT · {date}                                  │
+│  dir: {cwd}                                          │
+│  mcp: {count} servers · {categories} categories      │
+└─────────────────────────────────────────────────────┘
+
+  CONTEXT                                         {✓|✗}
+  ├─ CLAUDE.md (global)     {lines}L  {sections}
+  ├─ CLAUDE.md (project)    {lines}L  {sections}
+  ├─ AGENTS.md              {status}
+  └─ cross-ref              {matched}/{total} skills
+
+  SKILLS                                          {count}
+  ├─ infrastructure  {list}
+  ├─ workflow         {list}
+  ├─ integration      {list}
+  ├─ content          {list}
+  ├─ ghosts           {mentioned but not installed}
+  └─ orphans          {installed but not referenced}
+
+  MCP SERVERS                                     {count}
+  ├─ {name}  {category}  {status}
+  └─ coverage: {categories}/{8}
+
+  MEMORY                                          {files}
+  ├─ projects    {count} with memory
+  ├─ total       {size}
+  └─ episodic    {installed|not found}
+
+  HOOKS                                           {count}
+  └─ {trigger}: {description}
+
+  SETTINGS
+  ├─ permissions   {mode}
+  ├─ plugins       {count} ({names})
+  └─ statusline    {custom|default}
+
+  ─────────────────────────────────────────────────
+
+  POS SCORE: {score}/12
+
+  ┌─ Breakdown ─────────────────────────────────┐
+  │ CLAUDE.md exists        {0-1}/{1}   {note}  │
+  │ CLAUDE.md quality       {0-1}/{1}   {note}  │
+  │ Skills > 0              {0-1}/{1}   {note}  │
+  │ Skills > 5              {0-1}/{1}   {note}  │
+  │ MCP > 0                 {0-1}/{1}   {note}  │
+  │ MCP diversity           {0-1}/{1}   {note}  │
+  │ Memory active           {0-1}/{1}   {note}  │
+  │ Hooks configured        {0-1}/{1}   {note}  │
+  │ AGENTS.md               {0-1}/{1}   {note}  │
+  │ Project CLAUDE.md       {0-1}/{1}   {note}  │
+  │ Cross-referencing       {0-1}/{1}   {note}  │
+  │ Settings configured     {0-1}/{1}   {note}  │
+  └─────────────────────────────────────────────┘
+
+  GAPS (highest impact first):
+  1. {gap + specific action}
+  2. {gap + specific action}
+  3. {gap + specific action}
+\`\`\`
+
+## Scoring (12 points)
+
+| Component | Points | Criteria |
+|-----------|--------|----------|
+| CLAUDE.md exists | 1 | Any CLAUDE.md (global or project) |
+| CLAUDE.md quality | 1 | >50 lines with named sections (naming, integrations, workflows) |
+| Skills > 0 | 1 | Has any installed skills |
+| Skills > 5 | 1 | Meaningful skill library with 3+ patterns |
+| MCP > 0 | 1 | Has any MCP servers configured |
+| MCP diversity | 1 | 3+ categories covered |
+| Memory active | 1 | Auto memory exists with content (not empty) |
+| Hooks configured | 1 | Any hooks set up |
+| AGENTS.md | 1 | Project has agent index |
+| Project CLAUDE.md | 1 | Project-specific rules (not just global) |
+| Cross-referencing | 1 | >80% of skills mentioned in CLAUDE.md exist |
+| Settings configured | 1 | Non-default permissions or custom statusline |
+
+## Gap Suggestions
+
+| Score | Focus |
+|-------|-------|
+| 0-3 | "Start: \`~/.claude/CLAUDE.md\` + 1 skill + 1 MCP server → run /pos-setup" |
+| 4-6 | "Grow: more skills, MCP diversity, enable auto memory" |
+| 7-9 | "Automate: hooks, Linear awareness, morning brief pipeline" |
+| 10-12 | "Share: dashboard, skill packs, community contributions" |
+
+Always suggest the **single highest-impact action** as gap #1.
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Counting servers instead of categories | 5 filesystem mounts = 1 category |
+| Skipping cross-reference check | Ghost skills waste CLAUDE.md context tokens |
+| Not reading SKILL.md frontmatter | Name/description tells if skill is real or placeholder |
+| Reporting empty memory dirs as active | Check content, not just file existence |
+| Missing deferred servers | Scan skill files for \`mcp__\` patterns, not just mcp.json |
+| Hardcoded paths in report | Use \`~\` or \`$HOME\` in all suggestions |`,
+
+'pos-morning': `---
+name: pos-morning
+description: Morning brief pipeline — auto-detects MCP servers, gathers calendar + tasks + sessions + vault, synthesizes ONE focus sentence. Three output modes.
+version: 3.0
+user_invocable: true
+arguments:
+  - name: style
+    description: "Output: brief (default), full, telegram"
+    required: false
+---
+
+# POS Morning — Daily Brief Pipeline
+
+Generate a morning brief by auto-detecting your integrations, gathering context from every available source, and synthesizing ONE focused sentence for the day. Works with zero setup — adapts to whatever you have connected.
+
+This is the **"aha moment"** of a POS — the first time all your data sources produce a single actionable priority.
+
+## Step 0: Detect Available Integrations
+
+Read MCP config to know what's available BEFORE gathering data:
+
+\`\`\`bash
+cat ~/.claude/mcp.json 2>/dev/null
+\`\`\`
+
+Build integrations map from configured servers:
+
+| Server | Capability | Loader |
+|--------|-----------|--------|
+| krisp | Meetings, transcripts, action items | \`ToolSearch: "+krisp"\` |
+| linear | Tasks, projects, sprints | \`ToolSearch: "+linear list"\` |
+| telegram | Saved messages (context clues) | \`ToolSearch: "+telegram get"\` |
+| notion | Notes, databases | \`ToolSearch: "+notion search"\` |
+| exa | Web context (optional) | \`ToolSearch: "+exa"\` |
+
+**Only ToolSearch servers found in mcp.json.** Don't guess — if not configured, don't try.
+
+Also check for local tools:
+
+\`\`\`bash
+# Google Calendar script (bash wrapper)
+GCAL_SCRIPTS=("$HOME/.claude/scripts/gcal-smart.sh" "$HOME/.claude/scripts/gcal.sh")
+for s in "\${GCAL_SCRIPTS[@]}"; do [ -x "$s" ] && echo "gcal: $s" && break; done
+
+# Linear tracking cache (memory file)
+find ~/.claude/projects -name "linear-tracking.md" -type f 2>/dev/null | head -1
+\`\`\`
+
+## Step 1: Gather Context
+
+Try each source in degradation order. **Skip silently** if unavailable — never error, never ask to install.
+
+### 1.1 Calendar
+
+**Degradation chain** (stop at first success):
+
+1. **Krisp MCP** (if in mcp.json):
+   \`\`\`
+   ToolSearch: "+krisp meetings"
+   mcp__krisp__list_upcoming_meetings
+   mcp__krisp__search_meetings  (yesterday, for recap)
+   \`\`\`
+   Krisp also provides action items from yesterday's meetings — extract these.
+
+2. **Google Calendar script**:
+   \`\`\`bash
+   "$HOME/.claude/scripts/gcal-smart.sh" today
+   "$HOME/.claude/scripts/gcal-smart.sh" week  # for broader context
+   \`\`\`
+
+3. **Skip** — note "no calendar" in output header.
+
+### 1.2 Tasks
+
+**Degradation chain:**
+
+1. **Linear MCP**:
+   \`\`\`
+   ToolSearch: "+linear list_issues"
+   mcp__linear__list_issues(assignee: "me", status: "started")
+   mcp__linear__list_issues(assignee: "me", status: "unstarted")
+   \`\`\`
+   Also check for recently completed (last 3 days) to show momentum.
+
+2. **Linear cache** (memory file):
+   \`\`\`bash
+   TRACKING=$(find ~/.claude/projects -name "linear-tracking.md" -type f 2>/dev/null | head -1)
+   \`\`\`
+   Read and extract cached task list with statuses.
+
+3. **Local TODO**:
+   \`\`\`bash
+   find . -maxdepth 2 \\( -name "TODO.md" -o -name "tasks.md" -o -name "TODO" \\) 2>/dev/null | head -3
+   \`\`\`
+
+4. **Skip** — note "no task source".
+
+### 1.3 Messages (context clues)
+
+**Only if Telegram MCP detected:**
+
+\`\`\`
+ToolSearch: "+telegram get_messages"
+mcp__telegram__telegram_get_messages(dialog: "me", limit: 5)
+\`\`\`
+
+Saved messages reveal what the user was thinking about. Extract themes, don't display raw messages.
+
+### 1.4 Recent Sessions
+
+\`\`\`bash
+touch -t $(date +%Y%m%d)0000 /tmp/pos-today-marker 2>/dev/null
+find ~/.claude/projects -name "*.jsonl" -newer /tmp/pos-today-marker -maxdepth 3 2>/dev/null | head -5
+
+# If nothing today, check yesterday
+YESTERDAY=$(date -v-1d +%Y%m%d 2>/dev/null || date -d "yesterday" +%Y%m%d 2>/dev/null)
+touch -t \${YESTERDAY}0000 /tmp/pos-yesterday-marker 2>/dev/null
+find ~/.claude/projects -name "*.jsonl" -newer /tmp/pos-yesterday-marker -maxdepth 3 2>/dev/null | head -5
+\`\`\`
+
+For each session, read first 20 and last 20 lines to extract:
+- Project name (from path)
+- Topic (from first user message)
+- Tools used (count of tool calls, approximate effort)
+
+### 1.5 Vault State (optional)
+
+If working directory is a vault:
+
+\`\`\`bash
+find . -name "*.md" -mmin -720 \\
+  -not -path "./.obsidian/*" \\
+  -not -path "./.trash/*" \\
+  -not -path "./.smart-env/*" \\
+  -not -path "./node_modules/*" \\
+  2>/dev/null | head -10
+\`\`\`
+
+### 1.6 Yesterday's Meetings (if Krisp available)
+
+\`\`\`
+mcp__krisp__search_meetings (yesterday's date range)
+mcp__krisp__list_activities
+\`\`\`
+
+Extract per-meeting:
+- Title, duration, participants
+- Action items generated
+- Talk time ratio (were you presenting or listening?)
+
+## Step 2: Synthesize
+
+### Weekday-aware mode
+
+Adjust synthesis by day:
+
+| Day | Mode | Extra |
+|-----|------|-------|
+| Monday | Week overview | Show full week calendar, sprint status |
+| Tuesday-Thursday | Standard | Focus on today's blocks |
+| Friday | Wins + lessons | Show completed tasks this week, retrospective prompt |
+
+### FOCUS derivation
+
+The single most important output. Derive ONE sentence from ALL context:
+
+1. Check today's calendar — what's the biggest time commitment?
+2. Check in-progress tasks — what's most urgent or overdue?
+3. Check yesterday's sessions — what was the user mid-work on?
+4. Check action items from yesterday's meetings — what was promised?
+5. Combine: **"[Action verb] [specific thing] [by when / why]"**
+
+Examples:
+- "Finalize workshop slides before 14:00 session"
+- "Close 3 overdue Linear tasks — sprint ends Friday"
+- "No meetings today — deep work on dashboard generator"
+- "Follow up on partnership call action items before standup"
+
+**NEVER** generic focus like "have a productive day" — must be specific.
+
+### Output structure
+
+\`\`\`
+┌─────────────────────────────────────────────────┐
+│  MORNING BRIEF · {weekday} {date}               │
+│  sources: {list of what connected}              │
+└─────────────────────────────────────────────────┘
+
+  FOCUS
+  > {main priority — 1 sentence from all context}
+
+  CALENDAR ({count} events)
+  ├─ {time}  {title}  ({duration})
+  ├─ {time}  {title}  ({duration})
+  └─ {time}  {title}  ({duration})
+
+  TASKS ({in_progress} IP · {todo} todo)
+  ├─ {id}  {title}                           ◐ IP
+  ├─ {id}  {title}                           ◐ IP
+  └─ +{N} in backlog
+
+  YESTERDAY
+  > {1-2 sentences: what you worked on, based on sessions + meetings}
+
+  OBSERVATIONS
+  · {schedule insight — conflicts, free blocks, back-to-back}
+  · {task insight — overdue items, approaching deadlines}
+  · {pattern — "3 sessions on X this week, close it today?"}
+\`\`\`
+
+## Step 3: Output Modes
+
+### brief (default)
+Terminal output as above.
+
+### full
+Same + additional sections:
+
+\`\`\`
+  YESTERDAY'S MEETINGS ({count})
+  ├─ {title}  {duration}  {participants}
+  │  → action: {item}
+  └─ {title}  {duration}
+
+  RECENT FILES ({count})
+  ├─ {filename}  {modified time ago}
+  └─ {filename}  {modified time ago}
+
+  SAVED MESSAGES
+  ├─ {preview of recent telegram saved}
+  └─ {preview}
+
+  INTEGRATIONS
+  ├─ calendar     {krisp|gcal|none}
+  ├─ tasks        {linear|cache|local|none}
+  ├─ messaging    {telegram|none}
+  ├─ meetings     {krisp|none}
+  └─ sessions     {N found}
+\`\`\`
+
+### telegram
+Compact version for Telegram Saved Messages:
+
+\`\`\`
+#morning {weekday}
+
+focus: {priority}
+
+{time} {event}
+{time} {event}
+
+tasks: {count} IP · {count} todo
+· {most important}
+· {second}
+
+> {one observation}
+\`\`\`
+
+Send via:
+\`\`\`
+ToolSearch: "+telegram send_self"
+mcp__telegram__telegram_send_self(message: "{brief}")
+\`\`\`
+
+If Telegram not available, fall back to \`brief\` and note it.
+
+## Principles
+
+- **Graceful degradation**: 0 integrations = minimal brief; full stack = rich brief
+- **Never error on missing source**: skip silently, note what connected in header
+- **Opinionated focus**: ALWAYS synthesize ONE focus — this is the core value
+- **Fast**: direct tool calls only, no background agents needed, <30 seconds
+- **Weekday-aware**: Monday overview, Friday retrospective, standard midweek
+- **Action items carry forward**: yesterday's meeting commitments appear in today's brief
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| ToolSearch for server not in mcp.json | Only search servers found in config |
+| Generic focus: "be productive today" | Focus MUST be specific: action + object + deadline |
+| Showing raw JSONL content | Extract topic from first user message only |
+| Failing when no calendar | Skip silently — brief with just tasks is valuable |
+| Hardcoded MCP tool names | ToolSearch first — tool names vary across setups |
+| Sending telegram without checking | Check Step 0 map — only send if detected |
+| Reading entire session files | First 20 + last 20 lines is enough for topic |
+| Skipping yesterday's meetings | Krisp action items are tomorrow's priorities |`,
+
+'pos-skill-factory': `---
+name: pos-skill-factory
+description: Create a new Claude Code skill from a description. 4 template patterns, quality validation, install to chosen location.
+version: 3.0
+user_invocable: true
+arguments:
+  - name: idea
+    description: "What the skill should do (natural language)"
+    required: true
+---
+
+# POS Skill Factory — Build Skills from Ideas
+
+Create a production-quality Claude Code skill from a natural language description. Uses 4 template patterns from real POS implementations, validates against a quality checklist, and installs to the right location.
+
+## Step 1: Understand the Idea
+
+Parse \`{idea}\` and determine:
+
+1. **Core action** — scan, generate, send, transform, aggregate, analyze, summarize
+2. **Inputs** — files, MCP data, user input, context, CLI args
+3. **Outputs** — terminal text, file, message, HTML, structured data
+4. **Tools needed** — Read/Write, Bash, Grep, Glob, MCP, ToolSearch, Task (sub-agents)
+5. **Pattern** — which of the 4 templates fits best
+
+## Step 2: Select Template Pattern
+
+### Pattern A: Audit (scan + score + suggest)
+
+**When**: skill examines a system, counts things, produces a score.
+**Structure**: discover sources → scan each → aggregate → score → suggest gaps.
+**Real examples**: \`/pos-audit\` (POS infrastructure), \`vault-cleanup\` (Obsidian maintenance), \`security-scan\` (secrets/permissions).
+
+\`\`\`
+## Step 0: Discover sources
+  {read mcp.json, find files, check configs}
+## Step 1-N: Scan each source
+  {extract data, categorize, count}
+## Output: scored report
+  {box-drawing table with score breakdown}
+## Scoring table
+  {component | points | criteria}
+## Gap suggestions
+  {score range → recommended action}
+\`\`\`
+
+### Pattern B: Pipeline (gather + synthesize + output)
+
+**When**: skill pulls from multiple sources and synthesizes a result.
+**Structure**: detect integrations → gather from each (with degradation) → synthesize → output in chosen format.
+**Real examples**: \`/pos-morning\` (daily brief), \`/daily-focus\` (5 parallel agents → brief + visual card), \`/research\` (multi-angle Exa search → synthesis).
+
+\`\`\`
+## Step 0: Detect integrations
+  {read mcp.json, build source map}
+## Step 1: Gather from each source
+  {degradation chain: MCP → bash fallback → skip}
+## Step 2: Synthesize
+  {derive insight from combined data}
+## Step 3: Output
+  {multiple format options: terminal, file, message}
+\`\`\`
+
+**Key Pipeline pattern**: always start with MCP detection and use **graceful degradation chains**:
+\`\`\`
+Calendar: Krisp MCP → gcal script → skip
+Tasks: Linear MCP → cache file → local TODO → skip
+Messages: Telegram MCP → skip
+\`\`\`
+
+### Pattern C: Generator (input + transform + write)
+
+**When**: skill takes input and produces a file or artifact.
+**Structure**: parse input → apply template/rules → write output → verify.
+**Real examples**: \`/pos-dashboard-gen\` (HTML dashboard), \`/deck\` (HTML presentations), \`/imagine\` (image generation via API).
+
+\`\`\`
+## Step 1: Parse input
+  {args or interactive questions}
+## Step 2: Build artifact
+  {HTML, markdown, image, etc.}
+## Step 3: Write and verify
+  {write file, check size, open in browser/app}
+## Design system (if visual)
+  {CSS variables, fonts, color scheme}
+\`\`\`
+
+### Pattern D: Integrator (detect + connect + execute)
+
+**When**: skill wraps an external service with opinionated defaults.
+**Structure**: ToolSearch → build payload → show preview → confirm → execute → report.
+**Real examples**: \`/linear-action\` (Linear CRUD with pre-fill), \`/telegram\` (MTProto messaging), \`/calendar\` (gcal with fallback chain).
+
+\`\`\`
+## Step 0: Load MCP tools
+  {ToolSearch: "+server_name"}
+## Step 1: Build payload
+  {pre-fill from context — session topic, recent work}
+## Step 2: Preview → confirm
+  {show what will happen, ask y/edit/skip}
+## Step 3: Execute and report
+  {MCP call, format result}
+\`\`\`
+
+**Key Integrator pattern**: always **pre-fill then confirm**:
+\`\`\`
+AIM-2054 · Sprint review prep · ◐ IP
+action: update
+comment: "completed slide deck, ready for review"
+→ execute? [y/edit/skip]
+\`\`\`
+
+## Step 3: Generate Skill Name
+
+Rules:
+- **Lowercase, hyphenated**: \`morning-brief\`, \`weekly-review\`, \`task-sorter\`
+- **2-3 words max**: never more than 3
+- **Verb-noun preferred**: \`check-tasks\`, \`send-digest\`, \`scan-vault\`
+- **No generic verbs**: avoid \`do-\`, \`run-\`, \`make-\` — be specific
+- **No project prefix**: user adds their own prefix (e.g., \`aim-\`)
+
+**Validation**: name must complete "I want to _____" naturally.
+- Good: "I want to \`check-tasks\`"
+- Bad: "I want to \`task-thing\`"
+
+## Step 4: Generate SKILL.md
+
+Follow Claude Code skill spec exactly:
+
+\`\`\`markdown
+---
+name: {skill-name}
+description: {ONE line — what it does. Must fit in a skill listing.}
+version: 1.0
+user_invocable: true
+arguments:          # only if skill takes parameters
+  - name: {param}
+    description: "{what it controls}"
+    required: false
+---
+
+# {Title} — {Subtitle}
+
+{2-3 sentences: what, why, when.}
+
+## Step 0: {Detect/Discover} (if MCP-dependent)
+
+{Read ~/.claude/mcp.json, ToolSearch for servers}
+
+## Step N: {Action}
+
+{Specific instructions with:
+- Exact tool calls (Read, Write, Bash, Grep, Glob, ToolSearch)
+- MCP function names
+- Degradation chains (try A → try B → skip)
+- What to do with the data}
+
+## Output Format
+
+{EXACT format with box-drawing characters:
+┌─ ├─ └─ for trees
+─── for dividers}
+
+## Principles
+
+- {Key behavior rule}
+- {Graceful degradation}
+- {What to never do}
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| {wrong approach} | {correct approach} |
+\`\`\`
+
+### Spec Rules
+
+- **YAML frontmatter**: \`name\`, \`description\` (one line), \`version\`, \`user_invocable: true\`
+- **description**: one line that fits a skill listing — not a paragraph
+- **arguments**: only if behavior genuinely changes with parameters
+- **Box-drawing**: \`┌ ├ └ ─ │\` for all structured output
+- **Paths**: \`~\` or \`$HOME\`, never hardcoded personal paths
+- **Common Mistakes**: ALWAYS include, 3-6 rows minimum
+- **MCP pattern**: Step 0 reads mcp.json → ToolSearch → degradation chain
+
+## Step 5: Preview and Location
+
+Show the skill, then ask via \`AskUserQuestion\`:
+
+\`\`\`
+Generated: /{skill-name}
+Pattern: {A|B|C|D} — {name}
+Lines: {count}
+Sections: {list of ## headers}
+
+Where to install?
+
+1. Global (~/.claude/skills/) — available everywhere (Recommended)
+2. Project (.claude/skills/) — only current directory
+3. Show only — don't install yet
+\`\`\`
+
+## Step 6: Install and Verify
+
+\`\`\`bash
+mkdir -p {path}/{skill-name}
+\`\`\`
+
+Write SKILL.md with the Write tool (not bash).
+
+Verify:
+
+\`\`\`bash
+wc -l {path}/{skill-name}/SKILL.md
+\`\`\`
+
+## Step 7: Post-Install
+
+\`\`\`
+/{skill-name} installed
+
+  path: {full_path}/SKILL.md
+  size: {lines} lines
+  pattern: {A|B|C|D} — {name}
+
+  test:  /{skill-name}
+  edit:  {full_path}/SKILL.md
+\`\`\`
+
+## Quality Checklist
+
+Validate all 7 before writing:
+
+| # | Check | Criteria |
+|---|-------|----------|
+| 1 | **Self-contained** | Works without deps it can't detect |
+| 2 | **Graceful degradation** | Missing source = skip, not error |
+| 3 | **Specific output** | Exact format shown, not "generate report" |
+| 4 | **Monospace-first** | Box-drawing chars for all structure |
+| 5 | **Tool-aware** | Names which Claude Code tools to use |
+| 6 | **Right size** | 40-150 lines. Longer → split into skills |
+| 7 | **Anonymized** | \`~\` or \`$HOME\`, no personal paths |
+
+Fix before preview if any check fails.
+
+## Real Examples
+
+| User says | Skill | Pattern | Key feature |
+|-----------|-------|---------|-------------|
+| "summarize meetings and send to TG" | \`meeting-digest\` | B Pipeline | Krisp → synthesize → telegram send |
+| "nag me about overdue tasks" | \`task-nag\` | D Integrator | Linear → filter overdue → urgent list |
+| "weekly review from sessions" | \`weekly-review\` | B Pipeline | JSONL scan → topic extraction → report |
+| "audit my security" | \`security-scan\` | A Audit | .env, secrets, permissions → scored |
+| "HTML from markdown" | \`md-to-html\` | C Generator | Read .md → template → write .html |
+| "check vault health" | \`vault-health\` | A Audit | File count, size, orphans → scored |
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Description > 1 line | One sentence max — must fit skill listing |
+| Args skill doesn't need | Only add if behavior genuinely changes |
+| Vague output: "nice report" | Show EXACT format with box-drawing |
+| No MCP degradation chain | Always: MCP → file fallback → skip |
+| Skill > 150 lines | Split into 2 — a skill does ONE thing |
+| Missing Common Mistakes | Every skill needs 3-6 rows minimum |
+| Not checking mcp.json first | Step 0 discovers what's available |`,
+
+'pos-dashboard-gen': `---
+name: pos-dashboard-gen
+description: Generate a personal HTML dashboard from your POS context. Auto-detects MCP, gathers data, builds terminal-aesthetic single-file page.
+version: 3.0
+user_invocable: true
+arguments:
+  - name: panels
+    description: "Comma-separated: focus,calendar,tasks,sessions,skills,docs,metrics (default: all available)"
+    required: false
+  - name: theme
+    description: "dark (default) or light"
+    required: false
+  - name: output
+    description: "Output path (default: /tmp/pos-dashboard.html)"
+    required: false
+---
+
+# POS Dashboard Generator
+
+Generate a self-contained HTML dashboard from your POS context. Auto-detects integrations, gathers data, builds a single-file page with terminal aesthetic. Snapshot at generation time — run again to refresh.
+
+## Step 0: Detect Integrations
+
+Same pattern as \`/pos-morning\` — read MCP config first:
+
+\`\`\`bash
+cat ~/.claude/mcp.json 2>/dev/null
+\`\`\`
+
+Also check local tools:
+
+\`\`\`bash
+# Calendar script
+[ -x "$HOME/.claude/scripts/gcal-smart.sh" ] && echo "gcal: available"
+
+# Linear cache
+find ~/.claude/projects -name "linear-tracking.md" -type f 2>/dev/null | head -1
+\`\`\`
+
+Build source map. Only gather from detected sources.
+
+## Step 1: Gather Data
+
+For each panel, fetch data. **Skip panels without data** — empty panel is worse than no panel.
+
+### Focus Panel
+Sources (try in order):
+1. Today's focus from recent \`/pos-morning\` output or daily-focus file
+2. Memory files: \`find ~/.claude/projects -name "MEMORY.md" -type f 2>/dev/null\`
+3. CLAUDE.md project description
+4. Fallback: "run /pos-morning to set today's focus"
+
+### Calendar Panel
+**Degradation chain:**
+1. Krisp MCP: \`ToolSearch: "+krisp meetings"\` → \`mcp__krisp__list_upcoming_meetings\`
+2. gcal script: \`"$HOME/.claude/scripts/gcal-smart.sh" today\`
+3. Skip panel
+
+Format: \`[{time: "10:00", title: "Standup", duration: "30m"}]\`
+
+### Tasks Panel
+**Degradation chain:**
+1. Linear MCP: \`ToolSearch: "+linear list_issues"\` → \`mcp__linear__list_issues(assignee: "me", status: "started")\`
+2. Linear cache: read \`linear-tracking.md\`
+3. Local TODO: \`find . -maxdepth 2 -name "TODO.md" 2>/dev/null\`
+4. Skip panel
+
+Format: \`[{id: "AIM-123", title: "Task", priority: "high", status: "IP"}]\`
+
+### Sessions Panel
+\`\`\`bash
+touch -t $(date +%Y%m%d)0000 /tmp/pos-today-marker 2>/dev/null
+find ~/.claude/projects -name "*.jsonl" -newer /tmp/pos-today-marker -maxdepth 3 2>/dev/null | head -8
+\`\`\`
+
+For each: project (path), first user message (topic), line count (activity).
+
+### Skills Panel
+\`\`\`bash
+ls ~/.claude/skills/*/SKILL.md 2>/dev/null
+ls ~/.claude/skills/*.md 2>/dev/null
+ls .claude/skills/*/SKILL.md 2>/dev/null
+\`\`\`
+
+Extract names from paths.
+
+### Documents Panel
+\`\`\`bash
+find . -name "*.md" -mmin -720 \\
+  -not -path "./.obsidian/*" \\
+  -not -path "./.trash/*" \\
+  -not -path "./node_modules/*" \\
+  2>/dev/null | head -8
+\`\`\`
+
+### Metrics Panel
+Computed from gathered data:
+- \`sessions\`: today's session count
+- \`tasks_ip\`: in-progress tasks
+- \`tasks_todo\`: todo tasks
+- \`skills\`: installed skill count
+- \`files_today\`: recently modified files
+- \`mcp_servers\`: configured server count
+
+## Step 2: Build HTML
+
+Generate a **single self-contained HTML file**.
+
+### CSS Design System
+
+\`\`\`css
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2128;
+  --border: rgba(48, 54, 61, 0.6);
+  --accent: #55aa88;
+  --accent-dim: #3d8066;
+  --blue: #4488cc;
+  --amber: #d4a843;
+  --red: #cc4444;
+  --text: #c9d1d9;
+  --text-dim: #8b949e;
+  --text-bright: #e6edf3;
+  --mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+  --r: 6px;
+}
+
+.light {
+  --bg: #ffffff;
+  --bg2: #f6f8fa;
+  --bg3: #f0f2f5;
+  --border: #d0d7de;
+  --accent: #2d8659;
+  --text: #1f2328;
+  --text-dim: #656d76;
+  --text-bright: #1f2328;
+}
+\`\`\`
+
+### Layout
+
+\`\`\`
+┌─ Terminal Strip (scrolling log) ────────────────┐
+├─ Header: POS DASHBOARD · {date} · LIVE {clock} ─┤
+├──────────────────────────────────────────────────┤
+│ Focus     │ Calendar   │ Tasks      │ Skills     │
+├───────────┼────────────┼────────────┼────────────┤
+│ Sessions  │ Documents  │ Metrics    │            │
+└──────────────────────────────────────────────────┘
+\`\`\`
+
+Grid: \`grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))\`
+
+### Terminal Strip
+
+Scrolling CSS marquee with real data:
+
+\`\`\`html
+<div class="terminal-strip">
+  <div class="strip-scroll">
+    {time} pos-morning ✓ · {time} linear sync {n} tasks ·
+    {time} session started · {time} vault: {n} files ·
+  </div>
+</div>
+\`\`\`
+
+CSS: \`animation: scroll-left 30s linear infinite\`
+
+### Panel Template
+
+\`\`\`html
+<div class="panel" data-panel="{name}">
+  <div class="panel-head">
+    <span class="panel-icon">></span>
+    <span class="panel-title">{NAME}</span>
+    <span class="panel-badge">{count}</span>
+  </div>
+  <div class="panel-body"><!-- items --></div>
+</div>
+\`\`\`
+
+Styles:
+- \`panel-head\`: uppercase, border-bottom accent, \`font-size: 0.72rem\`
+- \`panel-body\`: 12px padding, \`font-size: 0.8rem\`
+- \`panel-badge\`: pill, accent background
+
+### Data Injection
+
+Embed as JS constants:
+
+\`\`\`javascript
+const POS = {
+  generated: "{ISO timestamp}",
+  theme: "{dark|light}",
+  focus: "{focus sentence}",
+  calendar: [{time, title, duration}],
+  tasks: [{id, title, priority, status}],
+  sessions: [{project, topic, lines, time}],
+  skills: ["{name}", ...],
+  docs: [{name, modified}],
+  metrics: {sessions, tasks_ip, tasks_todo, skills, files_today, mcp_servers}
+};
+\`\`\`
+
+### Panel Rendering
+
+**Focus**: large text, accent color, full-width top.
+**Calendar**: time-sorted, \`{time}\` monospace dim, \`{title}\` bright.
+**Tasks**: priority dot (red=urgent, amber=high, blue=medium, dim=low), \`{id}\` dim prefix. Group by status.
+**Sessions**: \`{time}\` dim, \`{project}\` accent, \`{topic}\` text, activity bar (thin inline proportional to lines).
+**Skills**: chip grid. Click copies \`/{name}\` to clipboard.
+**Documents**: filename + "modified {ago}" dim.
+**Metrics**: 2x3 grid, big accent numbers, labels below.
+
+### Must-Have Features
+
+- **Live clock**: \`setInterval\` every 30s in header
+- **Terminal strip**: CSS marquee with real data
+- **Monospace**: JetBrains Mono from Google Fonts (with system fallback)
+- **Skill chips**: click-to-copy skill name
+- **Priority dots**: colored circles for tasks
+- **No external JS**: everything inline
+- **Google Fonts fallback**: works without CDN
+
+### Size Target
+
+400-700 lines. Fewer panels → shorter file.
+
+## Step 3: Write and Open
+
+\`\`\`bash
+OUTPUT="\${output:-/tmp/pos-dashboard.html}"
+\`\`\`
+
+Write with Write tool, then:
+
+\`\`\`bash
+open "$OUTPUT"
+\`\`\`
+
+Show:
+
+\`\`\`
+dashboard generated
+
+  path: {output}
+  panels: {included list}
+  data: {summary of sources}
+  theme: {dark|light}
+
+  → open {output}
+\`\`\`
+
+## Principles
+
+- **Snapshot**: static at generation time — run again to refresh
+- **Zero runtime deps**: Google Fonts optional (degrades to system mono)
+- **Terminal aesthetic**: dark bg, green accent, monospace, box-drawing
+- **Portable**: share as file, open on any machine with browser
+- **Data-driven panels**: no data = no panel (skip entirely)
+- **Single file**: CSS, JS, data, fonts fallback — all inline
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Rendering empty panels | No data = skip panel entirely |
+| External JS/CSS | Everything inline in single file |
+| Hardcoded personal data | All data from POS context gathering |
+| Fixed grid breaking mobile | \`auto-fit, minmax(280px, 1fr)\` |
+| 1000+ line HTML | Target 400-700 lines |
+| Missing font fallback | System monospace in font stack always |
+| Live fetch in HTML | Snapshot only — no XHR/fetch calls |
+| Forgetting live clock | \`setInterval\` updating header every 30s |`,
+
+'pos-setup': `---
+name: pos-setup
+description: Build your Personal Operating System from zero — 6-phase pipeline with real MCP integrations, hooks, and operational layer.
+version: 3.0
+user_invocable: true
+arguments:
+  - name: phase
+    description: "Jump to phase: context, mcp, skills, hooks, ops, dashboard (default: auto-detect)"
+    required: false
+---
+
+# POS Setup — Build Your Personal Operating System
+
+Sequential pipeline that builds a working Personal Operating System from zero. Auto-detects what you already have, skips completed phases, guides through each layer. Based on real production setup patterns — not generic templates.
+
+**The 6 layers of a POS:**
+1. **Context** (CLAUDE.md) — persistent identity, rules, conventions
+2. **MCP** — data source connections (calendar, tasks, search, messaging)
+3. **Skills** — reusable workflows as markdown files
+4. **Hooks** — automation triggers (session start/end, file writes)
+5. **Operations** — daily rituals, ambient tracking, quality systems
+6. **Dashboard** — visual snapshot of your system
+
+## Phase 0: State Detection
+
+Before starting, check what exists:
+
+\`\`\`bash
+CLAUDE_GLOBAL=$([ -f ~/.claude/CLAUDE.md ] && wc -l < ~/.claude/CLAUDE.md || echo 0)
+CLAUDE_PROJECT=$([ -f ./CLAUDE.md ] && echo "yes" || echo "no")
+MCP_SERVERS=$(cat ~/.claude/mcp.json 2>/dev/null | grep -c '"command"\\|"url"' || echo 0)
+SKILLS_COUNT=$(ls ~/.claude/skills/*/SKILL.md ~/.claude/skills/*.md 2>/dev/null | wc -l)
+HOOKS_SET=$([ -f ~/.claude/hooks.json ] && echo "yes" || echo "no")
+MEMORY_FILES=$(find ~/.claude/projects -name "MEMORY.md" 2>/dev/null | wc -l)
+DASHBOARD=$([ -f /tmp/pos-dashboard.html ] && echo "exists" || echo "none")
+\`\`\`
+
+Show state map:
+
+\`\`\`
+  POS STATE
+  ├─ context      {CLAUDE_GLOBAL}L global · project: {yes|no}
+  ├─ mcp          {MCP_SERVERS} servers
+  ├─ skills       {SKILLS_COUNT} installed
+  ├─ hooks        {yes|no}
+  ├─ operations   memory: {MEMORY_FILES} projects
+  └─ dashboard    {exists|none}
+
+  starting from: phase {first incomplete}
+\`\`\`
+
+**Phase thresholds** (skip if met):
+- context: CLAUDE.md > 30 lines with named sections
+- mcp: 3+ servers across 2+ categories
+- skills: 5+ skills installed
+- hooks: hooks.json exists with 1+ hook
+- ops: memory active across 2+ projects
+- dashboard: file exists and < 24h old
+
+If \`{phase}\` argument provided, jump directly.
+
+## Phase 1: Context Assembly
+
+**Goal**: create \`~/.claude/CLAUDE.md\` — your persistent identity layer.
+
+This file loads into EVERY session. It defines rules, naming, integrations, and workflows.
+
+**If exists and > 30 lines**: read it, show sections found, ask to extend. Skip if user declines.
+
+**If missing or thin**: ask via \`AskUserQuestion\`:
+
+\`\`\`
+What level of context do you need?
+
+1. Starter — formatting + naming convention + tool preferences
+2. Professional — add work context, team, integrations, communication style
+3. Full system — add eval protocol, context management, Linear awareness, hooks
+\`\`\`
+
+### Starter template (write with Write tool):
+
+\`\`\`markdown
+# Claude Code Rules
+
+## Formatting
+- **Bold** for key concepts
+- Clear headers for sections
+- Monospace for code, paths, commands
+
+## File Naming
+- Format: \`{project} {type} description – YYYY-MM-DD.md\`
+- EN DASH (–) only — never em dash or hyphen
+- Date ALWAYS at the end, nothing after
+- Types: research, analysis, draft, rule, meeting, summary, guide, prd
+- YAML frontmatter required
+
+## Preferences
+- Concise responses, no filler
+- Ask before creating directories
+- Edit existing files over creating new ones
+\`\`\`
+
+### Professional adds:
+
+\`\`\`markdown
+## Team Context
+- Project: {name}
+- Team: {members and roles}
+- Vault: {path to shared documents}
+
+## Communication Style
+- {your rules — lowercase start, no emoji, en dash, laconic}
+
+## Integrations
+- Linear: task format (e.g., AIM-XXXX), team members
+- Calendar: {Krisp MCP, gcal script, etc.}
+- Messaging: {Telegram rules — forbidden channels, style}
+\`\`\`
+
+### Full system adds:
+
+\`\`\`markdown
+## Context Management Protocol
+- Footer: \`◇ ctx: {used}K | {left}K left | {pct}% | {symbol}\`
+- Modes: ● OK (<50%) · ◐ WARN (50-70%) · ○ CRIT (>70%)
+- At CRIT: save progress, generate handoff, stop new tasks
+
+## AI Evals Protocol
+- Every response: \`▫ eval: T:✓ R:✓ C:○\`
+- T (Text): structure, clarity, insights
+- R (Rules): naming, folders, formatting
+- C (Code): works, minimal, idiomatic
+
+## Linear Awareness Layer
+- Auto-detect session → task match
+- Footer: \`▫ linear: AIM-XXXX · title · ◐ IP\`
+- Suggestions: \`→ /linear-action AIM-XXXX update\`
+
+## Ambient Research
+- Strategic sessions: auto-launch background Exa sub-agent
+- Disable: "no bg research"
+\`\`\`
+
+After writing, verify:
+
+\`\`\`bash
+wc -l ~/.claude/CLAUDE.md
+grep "^## " ~/.claude/CLAUDE.md
+\`\`\`
+
+Show: \`phase 1 complete · CLAUDE.md: {lines}L · {section_count} sections\`
+
+## Phase 2: MCP Connection
+
+**Goal**: connect data sources — at least 3 servers covering 2+ categories.
+
+\`\`\`bash
+cat ~/.claude/mcp.json 2>/dev/null
+\`\`\`
+
+### Recommended MCP Stack
+
+| # | Server | Category | What It Enables | Install |
+|---|--------|----------|-----------------|---------|
+| 1 | **Linear** | tasks | Task tracking, /linear-action, Linear Awareness Layer | \`claude mcp add linear -e LINEAR_API_KEY=lin_api_... -- npx -y @modelcontextprotocol/server-linear\` |
+| 2 | **filesystem** | files | Extended vault/project access | \`claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem ~/Documents ~/notes\` |
+| 3 | **Exa** | search | /research, /ambient-advisor, fact-checking | Deferred — loads on demand via Claude Code |
+| 4 | **Telegram** | messaging | Brief delivery, /intro, team comms | Custom: Telethon MTProto server |
+| 5 | **Krisp** | meetings | Transcripts, action items, /daily-focus | Deferred — enable in Krisp app settings |
+| 6 | **Playwright** | browser | Screenshots, visual cards, web scraping | Deferred — loads on demand |
+| 7 | **context7** | docs | Library documentation lookup | Deferred — loads on demand |
+| 8 | **Notion** | notes | Knowledge base, database access | \`claude mcp add notion -e OPENAPI_MCP_HEADERS='...' -- npx -y @notionhq/notion-mcp-server\` |
+| 9 | **Netlify** | deploy | Deploy management from terminal | \`claude mcp add netlify -e NETLIFY_PERSONAL_ACCESS_TOKEN=... -- npx -y @netlify/mcp\` |
+
+### MCP Categories and POS Functions
+
+| Category | POS Function | Impact |
+|----------|-------------|--------|
+| **Tasks** (Linear/Jira) | Sprint awareness, status updates | Critical — feeds Linear Awareness Layer |
+| **Calendar** (Krisp/gcal) | Time awareness, schedule conflicts | High — drives morning brief focus |
+| **Search** (Exa/context7) | Research, fact-checking, docs | High — powers /research, /ambient-advisor |
+| **Messaging** (Telegram) | Brief delivery, team comms | Medium — output beyond terminal |
+| **Files** (filesystem) | Cross-project file access | Medium — extends reach of all skills |
+| **Browser** (Playwright) | Visual verification, screenshots | Medium — visual card generation |
+| **Notes** (Notion) | Knowledge base queries | Optional — depends on note system |
+| **Deploy** (Netlify) | CI/CD from terminal | Optional — for web projects |
+
+**Deferred servers** (Exa, Krisp, Playwright, context7) load on demand — no \`claude mcp add\` needed. Just ensure the service is available.
+
+Show state and gaps:
+
+\`\`\`
+  MCP SERVERS ({count})
+  ├─ {name}    {category}    ✓ configured
+  └─ ...
+
+  CATEGORIES: {count}/8
+  MISSING:
+  · {category} — {function} — {install hint}
+\`\`\`
+
+**Do NOT run install commands directly** — show for user. They need API keys.
+
+Show: \`phase 2 complete · {count} servers · {categories} categories\`
+
+## Phase 3: Skills Installation
+
+**Goal**: install CTRL pack + user's first custom skill.
+
+### 3.1 Install CTRL Pack
+
+\`\`\`bash
+for skill in pos-audit pos-morning pos-dashboard-gen pos-skill-factory; do
+  [ -f ~/.claude/skills/$skill/SKILL.md ] && echo "$skill: ✓" || echo "$skill: missing"
+done
+\`\`\`
+
+For missing skills:
+
+\`\`\`bash
+git clone https://github.com/ai-mindset-org/pos-sprint.git /tmp/pos-sprint
+bash /tmp/pos-sprint/skill-pack/install.sh
+\`\`\`
+
+### 3.2 Skill Patterns (teach the user)
+
+Skills follow 4 patterns:
+
+| Pattern | Structure | Examples |
+|---------|-----------|---------|
+| **A: Audit** | scan → score → suggest | /pos-audit, vault-cleanup |
+| **B: Pipeline** | detect → gather → synthesize → output | /pos-morning, daily-focus, research |
+| **C: Generator** | parse input → build artifact → write | /pos-dashboard-gen, deck |
+| **D: Integrator** | load MCP → payload → preview → execute | /linear-action, telegram |
+
+Skills that use MCP ALWAYS:
+1. Read \`~/.claude/mcp.json\` to detect servers
+2. \`ToolSearch: "+server_name"\` to load tools
+3. Call MCP functions
+4. Graceful degradation: MCP unavailable → bash fallback → skip
+
+### 3.3 First Custom Skill
+
+After CTRL is installed, ask:
+
+\`\`\`
+What's one thing you do repeatedly?
+
+Examples from real POS setups:
+· "summarize my meetings and send to telegram"
+· "check my overdue tasks and nag me"
+· "compress a long document to key points"
+· "generate a weekly review from sessions"
+\`\`\`
+
+Invoke \`/pos-skill-factory\` with their idea — this creates their first personal skill.
+
+Show: \`phase 3 complete · {count} skills · first custom: /{name}\`
+
+## Phase 4: Hooks Setup
+
+**Goal**: automation triggers on session events.
+
+### Recommended Hooks
+
+**1. Linear Awareness (SessionStart)**
+
+\`\`\`bash
+#!/bin/bash
+# ~/.claude/hooks/linear-sync.sh
+# Read cached Linear tasks (<200ms, no API call)
+TRACKING=$(find ~/.claude/projects -name "linear-tracking.md" -type f 2>/dev/null | head -1)
+[ -z "$TRACKING" ] && exit 0
+IP_COUNT=$(grep -c "◐ IP" "$TRACKING" 2>/dev/null || echo 0)
+TODO_COUNT=$(grep -c "○ Todo" "$TRACKING" 2>/dev/null || echo 0)
+echo "--- Linear Awareness Layer ---"
+echo "tasks: $IP_COUNT IP · $TODO_COUNT todo"
+\`\`\`
+
+**2. Ambient Research (SessionStart)**
+
+\`\`\`bash
+#!/bin/bash
+# ~/.claude/hooks/ambient-advisor-start.sh
+STATE="/tmp/claude-research-state.json"
+[ -f "$STATE" ] && LAST=$(stat -f %m "$STATE" 2>/dev/null) || LAST=0
+NOW=$(date +%s)
+[ $((NOW - LAST)) -lt 600 ] && exit 0  # skip if <10min
+echo "--- Ambient Advisor ---"
+echo "Auto-trigger: ON. Launch background research on strategic topics."
+\`\`\`
+
+**3. Open in Obsidian (PostToolUse:Write)**
+
+\`\`\`bash
+#!/bin/bash
+# ~/.claude/hooks/open-in-obsidian.sh
+# Auto-open .md files in Obsidian after Write
+FILE="$1"
+VAULT_ROOT="$HOME/path/to/vault"
+[[ "$FILE" == *.md ]] && [[ "$FILE" == "$VAULT_ROOT"* ]] || exit 0
+REL="\${FILE#$VAULT_ROOT/}"
+open "obsidian://open?vault=notes&file=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$REL'))")"
+\`\`\`
+
+**4. Session End Logging (SessionEnd)**
+
+\`\`\`bash
+#!/bin/bash
+# ~/.claude/hooks/linear-session-end.sh
+# Log AIM-XXXX references from session to linear-tracking.md
+\`\`\`
+
+### Setup
+
+Ask via \`AskUserQuestion\` with \`multiSelect: true\`:
+
+\`\`\`
+Which hooks? (select all that apply)
+
+1. Linear Awareness — task context at session start (Recommended)
+2. Ambient Research — auto background research on strategic topics
+3. Obsidian Integration — auto-open written .md files
+4. Session Logging — log Linear task references at session end
+\`\`\`
+
+For each: create script in \`~/.claude/hooks/\`, add to hooks config, verify.
+
+**Most users: start with just Linear Awareness** — lowest friction, highest value.
+
+Show: \`phase 4 complete · {count} hooks active\`
+
+## Phase 5: Operational Layer
+
+**Goal**: activate daily systems — morning brief, settings, quality eval.
+
+### 5.1 Morning Brief Demo
+
+Run \`/pos-morning\` — the **"aha moment"**. All data sources synthesized into one focus sentence.
+
+The brief auto-detects MCP servers and degrades gracefully:
+- Calendar: Krisp MCP → gcal script → skip
+- Tasks: Linear MCP → cache → local TODO → skip
+- Messages: Telegram saved → skip
+- Sessions: recent JSONL scan
+
+### 5.2 Settings
+
+\`\`\`bash
+cat ~/.claude/settings.json 2>/dev/null
+\`\`\`
+
+Recommend:
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| \`defaultMode\` | \`"dontAsk"\` | Full autonomy for trusted tools |
+| \`statusLine\` | \`"~/.claude/statusline.sh"\` | Custom project-aware statusline |
+
+### 5.3 Auto Memory
+
+Verify memory is working:
+
+\`\`\`bash
+find ~/.claude/projects -name "MEMORY.md" -type f 2>/dev/null
+\`\`\`
+
+Memory activates after a few sessions. It accumulates patterns and project context.
+
+### 5.4 Eval Protocol (score 8+)
+
+For advanced users, add self-evaluation to every response:
+
+\`\`\`
+▫ eval: T:✓ R:✓ C:○
+\`\`\`
+
+T (Text quality), R (Rules compliance), C (Code quality). Binary pass/fail.
+
+Show: \`phase 5 complete · morning: tested · settings: ✓ · memory: {status}\`
+
+## Phase 6: Dashboard Generation
+
+Run \`/pos-dashboard-gen\` for a visual snapshot:
+
+\`\`\`
+  generating dashboard...
+  ├─ gathering: calendar, tasks, sessions, skills, docs
+  ├─ building: terminal aesthetic, responsive grid
+  └─ writing: /tmp/pos-dashboard.html
+
+  → open /tmp/pos-dashboard.html
+\`\`\`
+
+Show: \`phase 6 complete · dashboard at /tmp/pos-dashboard.html\`
+
+## Final Output
+
+\`\`\`
+┌─────────────────────────────────────────────────────┐
+│  POS SETUP COMPLETE · {date}                         │
+└─────────────────────────────────────────────────────┘
+
+  INFRASTRUCTURE
+  ├─ context      ~/.claude/CLAUDE.md     {lines}L
+  ├─ mcp          {count} servers         {categories}
+  ├─ skills       {count} installed       +{custom} custom
+  ├─ hooks        {count} active          {types}
+  ├─ operations   memory: ✓  morning: ✓   eval: {on|off}
+  └─ dashboard    /tmp/pos-dashboard.html
+
+  POS SCORE: {score}/12
+  ──────────────────────────────────────────────────
+
+  DAILY WORKFLOW:
+  1. /pos-morning      → focus sentence for the day
+  2. work on tasks     → Linear Awareness tracks context
+  3. /pos-audit        → weekly health check
+  4. /pos-skill-factory → when you spot a repeating workflow
+
+  RESOURCES:
+  · skill pack:  github.com/ai-mindset-org/pos-sprint/tree/main/skill-pack
+  · dashboard:   ai-mindset-org.github.io/pos-sprint/
+  · community:   submit skills via PR to pos-sprint repo
+\`\`\`
+
+## Principles
+
+- **Auto-detect and skip**: never repeat completed work
+- **Show, don't just tell**: each phase produces a visible artifact
+- **User controls execution**: show MCP commands, don't run them
+- **"Aha moment"**: Phase 5 morning brief is the turning point
+- **Graceful partial runs**: any subset of phases is useful
+- **Real patterns**: every recommendation comes from tested practice
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| Running all phases when setup exists | Always detect state first, skip completed |
+| Installing MCP without asking | Show commands, user runs — they need API keys |
+| Skipping first custom skill | This is the "aha moment" — POS becomes theirs |
+| Generic CLAUDE.md | Ask about user's actual work, team, workflows |
+| Not testing /pos-morning | The morning brief demo makes POS click |
+| Treating hooks as required for beginners | Start with 0-1 hooks, add after a week |
+| Hardcoded paths | Always use \`~\` or \`$HOME\` |`
+};
+
+// ═══ DOWNLOAD FUNCTIONS ═══
+
+function downloadSkill(name) {
+  const content = SKILLS[name];
+  if (!content) return;
+  // Generate install script instead of raw SKILL.md
+  let script = '#!/bin/bash\n# Install /' + name + ' skill\nmkdir -p ~/.claude/skills/' + name + '\ncat > ~/.claude/skills/' + name + '/SKILL.md << \'SKILLEOF\'\n';
+  script += content;
+  script += '\nSKILLEOF\necho "  + /' + name + ' installed to ~/.claude/skills/' + name + '/"\n';
+
+  const blob = new Blob([script], { type: 'application/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'install-' + name + '.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // Feedback: show how to run
+  const btn = event.target;
+  btn.textContent = 'bash ~/Downloads/install-' + name + '.sh';
+  btn.style.borderColor = '#22C55E';
+  btn.style.color = '#16A34A';
+  setTimeout(() => { btn.textContent = 'download'; btn.style.borderColor = ''; btn.style.color = ''; }, 4000);
+}
+
+function downloadAllSkills() {
+  // Generate a shell script that creates all skill files
+  let script = '#!/bin/bash\n# CTRL Skill Pack Installer\n# Generated from POS WS04 Dashboard\n\necho "ctrl > installing CTRL skill pack..."\necho ""\n\n';
+
+  for (const [name, content] of Object.entries(SKILLS)) {
+    const escaped = content.replace(/'/g, "'\\''");
+    script += `mkdir -p ~/.claude/skills/${name}\n`;
+    script += `cat > ~/.claude/skills/${name}/SKILL.md << 'SKILLEOF'\n`;
+    script += content;
+    script += `\nSKILLEOF\n`;
+    script += `echo "  + /${name}"\n\n`;
+  }
+
+  script += 'echo ""\necho "ctrl > 5 skills installed to ~/.claude/skills/"\necho ""\necho "start here:"\necho "  /pos-setup         \u2014 build POS from zero"\necho ""\necho "or jump to:"\necho "  /pos-audit         \u2014 scan and score (0-12)"\necho "  /pos-morning       \u2014 daily brief"\necho "  /pos-dashboard-gen \u2014 HTML dashboard"\necho "  /pos-skill-factory \u2014 create skills"\n';
+
+  const blob = new Blob([script], { type: 'application/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ctrl-skill-pack-install.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // Feedback: show how to run
+  if (event && event.target) {
+    const btn = event.target;
+    btn.textContent = 'run: bash ~/Downloads/ctrl-skill-pack-install.sh';
+    setTimeout(() => btn.textContent = 'Download install.sh', 4000);
+  }
+}
+
+function copyInstall() {
+  const cmd = 'git clone https://github.com/ai-mindset-org/pos-sprint.git\ncd pos-sprint && bash skill-pack/install.sh';
+  navigator.clipboard.writeText(cmd).then(() => {
+    const btns = document.querySelectorAll('.copy-btn');
+    btns.forEach(b => { b.textContent = 'copied!'; setTimeout(() => b.textContent = 'copy', 1500); });
+  });
+}
+</script>
+</body>
+</html>
