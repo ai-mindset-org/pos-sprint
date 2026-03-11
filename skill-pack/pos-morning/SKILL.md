@@ -27,8 +27,8 @@ Try each source. Skip silently if unavailable.
 ```bash
 # Try gcal-smart.sh if exists
 GCAL_SCRIPTS=(
-  "$HOME/Library/CloudStorage/Dropbox/notes/code tools/mcp-scripts/gcal-smart.sh"
   "$HOME/.claude/scripts/gcal.sh"
+  "$HOME/.claude/scripts/gcal-smart.sh"
 )
 for script in "${GCAL_SCRIPTS[@]}"; do
   [ -x "$script" ] && "$script" today && break

@@ -37,7 +37,7 @@ For each panel, try to fetch data. Skip panels where data is unavailable.
 ### Calendar
 ```bash
 # Try gcal script
-GCAL="$HOME/Library/CloudStorage/Dropbox/notes/code tools/mcp-scripts/gcal-smart.sh"
+GCAL="$HOME/.claude/scripts/gcal.sh"
 [ -x "$GCAL" ] && "$GCAL" today
 ```
 Or: `mcp__krisp__list_upcoming_meetings`
