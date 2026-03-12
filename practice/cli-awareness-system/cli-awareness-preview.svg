@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="520" viewBox="0 0 760 520">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;display=swap');
+    </style>
+    <linearGradient id="titlebar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2d2d2d"/>
+      <stop offset="100%" stop-color="#1e1e1e"/>
+    </linearGradient>
+    <linearGradient id="statusgrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Window frame -->
+  <rect width="760" height="520" rx="10" fill="#0d1117"/>
+  <rect width="760" height="36" rx="10" fill="url(#titlebar)"/>
+  <rect y="26" width="760" height="10" fill="url(#titlebar)"/>
+
+  <!-- Traffic lights -->
+  <circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="18" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="18" r="6" fill="#28c840"/>
+
+  <!-- Title -->
+  <text x="380" y="22" font-family="'JetBrains Mono', monospace" font-size="12" fill="#8b949e" text-anchor="middle">claude — notes</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- RESPONSE AREA -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- Response text -->
+  <text x="24" y="64" font-family="'JetBrains Mono', monospace" font-size="12" fill="#8b949e">❯ сделай summary встречи и отправь в телеграм</text>
+
+  <text x="24" y="96" font-family="'JetBrains Mono', monospace" font-size="13" fill="#c9d1d9">Готово — summary отправлен в Saved Messages.</text>
+  <text x="24" y="116" font-family="'JetBrains Mono', monospace" font-size="13" fill="#c9d1d9">3 action items, 2 решения, 1 open question.</text>
+
+  <!-- Separator -->
+  <line x1="24" y1="136" x2="736" y2="136" stroke="#21262d" stroke-width="1"/>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FOOTER — Level 2: Response Footer -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <text x="24" y="160" font-family="'JetBrains Mono', monospace" font-size="12.5" fill="#7ee787">◇</text>
+  <text x="40" y="160" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">ctx:</text>
+  <text x="72" y="160" font-family="'JetBrains Mono', monospace" font-size="12" fill="#c9d1d9">96K</text>
+  <text x="104" y="160" font-family="'JetBrains Mono', monospace" font-size="12" fill="#484f58">|</text>
+  <text x="116" y="160" font-family="'JetBrains Mono', monospace" font-size="12" fill="#c9d1d9">104K left</text>
+  <text x="208" y="160" font-family="'JetBrains Mono', monospace" font-size="12" fill="#484f58">|</text>
+  <text x="220" y="160" font-family="'JetBrains Mono', monospace" font-size="12" fill="#c9d1d9">48%</text>
+  <text x="260" y="160" font-family="'JetBrains Mono', monospace" font-size="12" fill="#484f58">|</text>
+  <text x="274" y="160" font-family="'JetBrains Mono', monospace" font-size="12" fill="#7ee787">●</text>
+
+  <!-- Eval line -->
+  <text x="24" y="182" font-family="'JetBrains Mono', monospace" font-size="12.5" fill="#484f58">▫</text>
+  <text x="40" y="182" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">eval:</text>
+  <text x="84" y="182" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">T:</text>
+  <text x="102" y="182" font-family="'JetBrains Mono', monospace" font-size="12" fill="#7ee787">✓</text>
+  <text x="120" y="182" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">R:</text>
+  <text x="138" y="182" font-family="'JetBrains Mono', monospace" font-size="12" fill="#7ee787">✓</text>
+  <text x="156" y="182" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">C:</text>
+  <text x="174" y="182" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">○</text>
+
+  <!-- Linear Awareness line -->
+  <text x="24" y="204" font-family="'JetBrains Mono', monospace" font-size="12.5" fill="#484f58">▫</text>
+  <text x="40" y="204" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">linear:</text>
+  <text x="100" y="204" font-family="'JetBrains Mono', monospace" font-size="12" fill="#79c0ff" text-decoration="underline">AIM-2054</text>
+  <text x="185" y="204" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">·</text>
+  <text x="196" y="204" font-family="'JetBrains Mono', monospace" font-size="12" fill="#c9d1d9">BOS speakers</text>
+  <text x="312" y="204" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">·</text>
+  <text x="324" y="204" font-family="'JetBrains Mono', monospace" font-size="12" fill="#d2a8ff">◐ IP</text>
+  <text x="372" y="204" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">→</text>
+  <text x="388" y="204" font-family="'JetBrains Mono', monospace" font-size="12" fill="#ffa657">/linear-action AIM-2054 update</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- LABELS — Level annotations -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- Level 2 bracket -->
+  <line x1="720" y1="148" x2="720" y2="210" stroke="#30363d" stroke-width="1.5"/>
+  <line x1="716" y1="148" x2="720" y2="148" stroke="#30363d" stroke-width="1.5"/>
+  <line x1="716" y1="210" x2="720" y2="210" stroke="#30363d" stroke-width="1.5"/>
+  <text x="736" y="176" font-family="'JetBrains Mono', monospace" font-size="9" fill="#484f58" transform="rotate(90, 736, 176)" text-anchor="middle">FOOTER</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- SEPARATOR -->
+  <!-- ═══════════════════════════════════════ -->
+  <line x1="24" y1="228" x2="736" y2="228" stroke="#21262d" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- LEVEL LEGEND -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- Level 1 -->
+  <rect x="24" y="244" width="340" height="80" rx="6" fill="#161b22" stroke="#21262d" stroke-width="1"/>
+  <text x="40" y="264" font-family="'JetBrains Mono', monospace" font-size="10" fill="#ffa657" font-weight="600">LEVEL 1  Status Line</text>
+  <text x="40" y="282" font-family="'JetBrains Mono', monospace" font-size="10" fill="#6e7681">bash-скрипт в ~/.claude/statusline.sh</text>
+  <text x="40" y="300" font-family="'JetBrains Mono', monospace" font-size="10" fill="#6e7681">обновляется каждый ход, видна внизу терминала</text>
+  <text x="40" y="316" font-family="'JetBrains Mono', monospace" font-size="10" fill="#484f58">⬤○○ 5 мин</text>
+
+  <!-- Level 2 -->
+  <rect x="388" y="244" width="348" height="80" rx="6" fill="#161b22" stroke="#21262d" stroke-width="1"/>
+  <text x="404" y="264" font-family="'JetBrains Mono', monospace" font-size="10" fill="#7ee787" font-weight="600">LEVEL 2  Response Footer</text>
+  <text x="404" y="282" font-family="'JetBrains Mono', monospace" font-size="10" fill="#6e7681">инструкция в CLAUDE.md</text>
+  <text x="404" y="300" font-family="'JetBrains Mono', monospace" font-size="10" fill="#6e7681">ctx + eval + поведение по порогам</text>
+  <text x="404" y="316" font-family="'JetBrains Mono', monospace" font-size="10" fill="#484f58">⬤○○ 3 мин</text>
+
+  <!-- Level 3 -->
+  <rect x="24" y="336" width="340" height="80" rx="6" fill="#161b22" stroke="#21262d" stroke-width="1"/>
+  <text x="40" y="356" font-family="'JetBrains Mono', monospace" font-size="10" fill="#d2a8ff" font-weight="600">LEVEL 3  Task Awareness</text>
+  <text x="40" y="374" font-family="'JetBrains Mono', monospace" font-size="10" fill="#6e7681">SessionStart hook + memory file</text>
+  <text x="40" y="392" font-family="'JetBrains Mono', monospace" font-size="10" fill="#6e7681">Linear / Jira / Todoist → footer</text>
+  <text x="40" y="408" font-family="'JetBrains Mono', monospace" font-size="10" fill="#484f58">⬤⬤○ 15 мин</text>
+
+  <!-- Level 4 -->
+  <rect x="388" y="336" width="348" height="80" rx="6" fill="#161b22" stroke="#21262d" stroke-width="1"/>
+  <text x="404" y="356" font-family="'JetBrains Mono', monospace" font-size="10" fill="#79c0ff" font-weight="600">LEVEL 4  Mission Control</text>
+  <text x="404" y="374" font-family="'JetBrains Mono', monospace" font-size="10" fill="#6e7681">statusline → JSON → iTerm2/tmux</text>
+  <text x="404" y="392" font-family="'JetBrains Mono', monospace" font-size="10" fill="#6e7681">видно даже при скролле</text>
+  <text x="404" y="408" font-family="'JetBrains Mono', monospace" font-size="10" fill="#484f58">⬤⬤⬤ 30 мин</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- STATUS LINE — Level 1 (bottom bar) -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <rect y="440" width="760" height="4" fill="#21262d"/>
+  <rect y="444" width="760" height="40" fill="url(#statusgrad)"/>
+
+  <!-- Progress bar blocks -->
+  <text x="24" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#7ee787" filter="url(#glow)">⏵</text>
+  <text x="42" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#c9d1d9">notes</text>
+  <text x="90" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#30363d">│</text>
+  <text x="102" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#ffa657">◆</text>
+  <text x="118" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#c9d1d9">Opus 4.6</text>
+  <text x="210" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#30363d">│</text>
+
+  <!-- Context bar -->
+  <text x="224" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#7ee787">▰▰▰▰▰</text>
+  <text x="290" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#30363d">▱▱▱▱▱</text>
+  <text x="358" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#c9d1d9">48%</text>
+  <text x="398" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">◇68k</text>
+
+  <text x="448" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#30363d">│</text>
+  <text x="462" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#d2a8ff">◐AIM-2054</text>
+
+  <text x="564" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#30363d">│</text>
+  <text x="578" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#58a6ff">◈</text>
+  <text x="594" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">POS guide…</text>
+
+  <text x="692" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#30363d">│</text>
+  <text x="706" y="470" font-family="'JetBrains Mono', monospace" font-size="12" fill="#6e7681">11m</text>
+
+  <!-- Bottom round corners -->
+  <rect y="484" width="760" height="36" rx="0" fill="#0d1117"/>
+  <rect y="484" width="760" height="36" rx="10" fill="#0d1117"/>
+
+  <!-- Label: Status Line -->
+  <text x="380" y="506" font-family="'JetBrains Mono', monospace" font-size="9" fill="#30363d" text-anchor="middle">▲ STATUS LINE — обновляется каждый ход Claude Code</text>
+</svg>
