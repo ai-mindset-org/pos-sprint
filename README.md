@@ -15,6 +15,7 @@ Batch: sprint-X26
 | [Naming Convention & Vault Structure](practice/naming-convention-vault-structure.md) | Формула имён файлов, структура Obsidian vault, теги, YAML frontmatter, интеграция с AI-агентами. [Веб-версия](https://pos-pipelines.netlify.app/naming.html) |
 | [Правила оркестрации моделей](practice/sergey-zinenko-orchestration-rules.md) | Таблица делегирования Opus/Sonnet/Haiku, автоэскалация, правила сессии |
 | [deck — HTML Presentation Generator](skills/deck) | Скилл для Claude Code: генерация single-file HTML презентаций. 2 стиля (terminal / editorial), готовые компоненты, примеры |
+| [CLI Awareness System](practice/cli-awareness-system) | Status Line, Footer Protocol, Task Awareness, Mission Control — 4 уровня информационного слоя в терминале Claude Code. Скрипты, шаблоны, примеры настройки |
 
 ## Skills
 
