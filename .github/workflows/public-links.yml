@@ -1,0 +1,12 @@
+name: Public repository links
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  links:
+    if: github.repository_owner == 'ai-mindset-org'
+    uses: ai-mindset-org/.github/.github/workflows/public-links-reusable.yml@25db1c6b96362ba532ba0cb9a1052419819aa191
