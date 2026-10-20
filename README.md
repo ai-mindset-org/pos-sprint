@@ -1,8 +1,10 @@
 # AI Personal Operational System — POS {sprint}
 
-Архив POS-спринта 2–14 марта 2026 года: практики, скиллы и конфигурации участников.
+<!-- aim-public-links:start -->
+[Лабы AI Mindset](https://aimindset.org/?utm_source=website&utm_medium=article&utm_campaign=start&utm_content=github-pos-sprint#learning) · [База знаний](https://base.aimindset.org/?utm_source=website&utm_medium=article&utm_campaign=start&utm_content=github-pos-sprint)
+<!-- aim-public-links:end -->
 
-[Текущие программы AI Mindset](https://aimindset.org/?utm_source=website&utm_medium=article&utm_campaign=start&utm_content=github-pos-sprint) · [База знаний и практик](https://base.aimindset.org/?utm_source=website&utm_medium=article&utm_campaign=start&utm_content=github-pos-sprint-base)
+Архив POS-спринта 2–14 марта 2026 года: практики, скиллы и конфигурации участников.
 
 Batch: sprint-X26
 
