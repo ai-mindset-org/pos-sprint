@@ -354,4 +354,4 @@ Max 5 tags per file. YAML frontmatter always.
 
 ---
 
-<sub>POS Sprint — AI Mindset · [aimindset.org](https://aimindset.org) · 2026</sub>
+<sub>POS Sprint — AI Mindset · [aimindset.org](https://aimindset.org?utm_source=website&utm_medium=article&utm_campaign=start&utm_content=github-pos-sprint) · 2026</sub>
